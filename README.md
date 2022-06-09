@@ -14,9 +14,9 @@ Then use
 
 to build the jar-file of the agent.
 
-In order to get the additional jar-file "loggerBin_deploy.jar" you might have to additionally execute
+In order to get the additional jar-file "loggerBin_deploy.jar" you have to additionally execute
 
-`bazel build //src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar`
+`bazel build //src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar`.
 
 The resulting jars will be
 - `bazel-bin/FileAccessAgent_deploy.jar`
