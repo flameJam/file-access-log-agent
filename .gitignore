@@ -4,7 +4,7 @@
 # Bazel Build Directories (Symlinks)
 bazel-bin
 bazel-out
-bazel-FileAccessAgent
+bazel-file-access-log-agent
 bazel-testlogs
 
 # Java
