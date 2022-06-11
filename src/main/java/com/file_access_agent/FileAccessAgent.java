@@ -67,8 +67,12 @@ public class FileAccessAgent {
 
         getResourceAgentBuilder(inst, tempFolder).installOn(inst);
 
-        //getMainAgentBuilder(inst, tempFolder).installOn(inst);
 
+        addShutdownHookForOutputComputation();
+    }
+
+    /** Add a ShutdownHook to the JVM to trigger the output computation & generation */
+    private static void addShutdownHookForOutputComputation() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -94,12 +98,6 @@ public class FileAccessAgent {
     private static AgentBuilder getResourceAgentBuilder(Instrumentation inst, File tempFolder) {
         Junction<TypeDescription> typeMatcher = ElementMatchers.namedOneOf(CLASSNAMES_TO_WATCH_RESOURCE);
         return getAgentBuilderTemplate(inst, tempFolder, typeMatcher).transform(new ResourceTransformer());
-    }
-
-    /** AgentBuilder for instrumenting the main method in order to trigger the logger output creation. */
-    private static AgentBuilder getMainAgentBuilder(Instrumentation inst, File tempFolder) {
-        Junction<TypeDescription> typeMatcher = ElementMatchers.any();
-        return getAgentBuilderTemplate(inst, tempFolder, typeMatcher).transform(new MainTransformer());
     }
 
     /** AgentBuilder Template reused in all other AgentBuilder-methods. */
