@@ -10,8 +10,9 @@ public class ClassGetResourceAdvice {
     @Advice.OnMethodExit()
     public static void onResourceWanted(@Advice.Origin("#m") String methodName, @Advice.Origin("#t") String type,
     @Advice.Argument(0) String resourceName) {
+        // TODO find a way to get the actual location of the resource
+        // idea: via return value -> get URI -> get File -> get absolute path?
         AccessLogger.logResourceAcquired(resourceName);
-        //System.out.printf("%s has been called by %s with arguments: %s\n", methodName, type, resourceName);
     }
 
 }

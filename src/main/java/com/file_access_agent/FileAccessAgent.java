@@ -15,7 +15,6 @@ import net.bytebuddy.description.type.TypeDescription;
 
 import com.file_access_agent.logger.AccessLogger;
 import com.file_access_agent.transformer.ConstructorTransformer;
-import com.file_access_agent.transformer.MainTransformer;
 import com.file_access_agent.transformer.ReadTransformer;
 import com.file_access_agent.transformer.ResourceTransformer;
 

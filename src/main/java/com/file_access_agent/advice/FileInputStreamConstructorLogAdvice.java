@@ -16,21 +16,16 @@ public class FileInputStreamConstructorLogAdvice {
      @Advice.Argument(0) Object firstArgumentObject) {
          
          if (firstArgumentObject instanceof File) {
-             
-            /*
-            String msg = String.format("FileInputStream (%s) has just been created for file: %s\n", fileInputStream.toString(),
-                ((File) firstArgumentObject).getAbsolutePath());
-            System.out.print(msg);
-            */
-            
             AccessLogger.logFileInputStreamCreated(fileInputStream, (File) firstArgumentObject);
-
         } else if (firstArgumentObject instanceof FileDescriptor) {
             // I'm unsure whether we need this constructor since the FileDescriptor for Files can only come from InputStreams,
             // so at some point there has to be a FileInputStream (I guess?)
-            System.out.printf("FileInputStream (%s) has just been created for FileDescriptor: %s\n", 
+            String msg = String.format("FileInputStream (%s) has just been created for FileDescriptor: %s\n", 
             fileInputStream.toString(),
             ((FileDescriptor) firstArgumentObject).toString());
+            
+            // Commented out to get to a first usable prototype
+            //System.out.printf(msg);
         }
     }
 
