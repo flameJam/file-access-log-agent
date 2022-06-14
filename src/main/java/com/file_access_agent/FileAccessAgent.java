@@ -75,7 +75,6 @@ public class FileAccessAgent {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                System.out.println("shutting down JVM, triggering agent output computation");
                 AccessLogger.provideOutput(OUTPUT_FILE_LOCATION);
             }
         });

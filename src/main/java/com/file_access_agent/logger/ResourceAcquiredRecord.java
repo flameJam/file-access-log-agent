@@ -1,18 +1,19 @@
 package com.file_access_agent.logger;
 
+import java.net.URL;
 import java.util.Set;
 
 public class ResourceAcquiredRecord extends RecordBase {
-    private String resourceName;
-    public ResourceAcquiredRecord(String resourceName) {
+    private URL resourceURL;
+    public ResourceAcquiredRecord(URL resourceURL) {
         super();
-        this.resourceName = resourceName;
+        this.resourceURL = resourceURL;
     }
 
     @Override
     public AccessLogger updateLists(AccessLogger accessLogger) {
-        Set<String> accessedResources = accessLogger.getAccessedResources();
-        accessedResources.add(this.resourceName);
+        Set<URL> accessedResources = accessLogger.getAccessedResources();
+        accessedResources.add(this.resourceURL);
         return new AccessLogger(accessLogger, null, null, accessedResources, null);
     }
 }

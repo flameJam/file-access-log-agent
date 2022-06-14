@@ -22,7 +22,12 @@ public class ResourceTransformer implements AgentBuilder.Transformer {
     private Builder<?> getResourceMaybeAsStreamBuilder(Builder<?> builder) {
 
         return builder.visit(Advice.to(ClassGetResourceAdvice.class)
-        .on(ElementMatchers.named("getResource").or(ElementMatchers.named("getResourceAsStream"))));
+        .on(ElementMatchers.named("getResource")));
+        // remove the following as soon as I am sure it is not necessary:
+        // as far as I know "getResourceAsStream(...)" also uses "getResource" to locate a resource
+        // which is convenient because I cannot collect the full path from an InputStream but only the URL
+        // returned by getResource().
+        // .or(ElementMatchers.named("getResourceAsStream"))));
     }
     
 }
