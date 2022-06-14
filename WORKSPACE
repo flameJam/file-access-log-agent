@@ -24,6 +24,7 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 maven_install(
     artifacts = [
         "net.bytebuddy:byte-buddy:1.12.10",
+        "com.fasterxml.jackson.core:jackson-databind:2.13.3"
     ],
     repositories = [
         "https://maven.google.com",

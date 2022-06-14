@@ -12,4 +12,7 @@ java_library(
     #    "//src/main/java/com/file_access_agent/advice:__pkg__"
     #    ],
     visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+    ]
 )
