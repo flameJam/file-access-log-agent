@@ -14,3 +14,4 @@ java_binary(
         ],
     data = ["//src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar"],
 )
+

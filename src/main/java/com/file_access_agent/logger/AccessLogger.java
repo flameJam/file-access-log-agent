@@ -5,20 +5,16 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOError;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.file_access_agent.util.json.JsonUtil;
 
 public class AccessLogger {
 
@@ -106,15 +102,7 @@ public class AccessLogger {
 
         BufferedWriter writer = new BufferedWriter(fileWriter);
         
-        String content = "Accessed Files:\n";
-        for (File file: this.getAccessedFiles()) {
-            content += file.getAbsolutePath() + "\n";
-        }
-        content += "Accessed Resources:\n";
-        for (URL resourceURL: this.getAccessedResources()) {
-                content += getPathForResourceURL(resourceURL) + "\n";
-            
-        }
+       String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources());
         
         try {
             writer.write(content);
@@ -130,45 +118,6 @@ public class AccessLogger {
             e.printStackTrace();
         }
     
-    }
-
-    private static String getPathForResourceURL(URL resourceURL) {
-        URI resourceURI;
-        try {
-            resourceURI = resourceURL.toURI();
-        } catch (URISyntaxException uriSyntaxExc) {
-            printStacktraceWithIgnoreWarning(uriSyntaxExc);
-            return String.format("URL %s could not be resolved to an URI", resourceURL.toString());
-        }
-        Path resourcePath = null;
-        try {
-            resourcePath = Path.of(resourceURI);
-        } catch (IllegalArgumentException illArgExc) {
-            printStacktraceWithIgnoreWarning(illArgExc);
-            return String.format("URI %s could not be resolved to a path - IllegalArgument", resourceURI);
-        } catch (FileSystemNotFoundException fileSysNotFoundExc) {
-            printStacktraceWithIgnoreWarning(fileSysNotFoundExc);
-            return String.format("URI %s could not be resolved to a path - FileSystemNotFound", resourceURI);
-        } catch (SecurityException securityException) {
-            printStacktraceWithIgnoreWarning(securityException);
-            return String.format("URI %s could not be resolved to a path - SecurityException", resourceURI);
-        }
-
-        try {
-            resourcePath = resourcePath.toAbsolutePath();
-        } catch (SecurityException securityException) {
-            printStacktraceWithIgnoreWarning(securityException);
-            return String.format("Path %s could not be resolved to an absolute path - SecurityException", resourcePath);
-        } catch (IOError ioError) {
-            printStacktraceWithIgnoreWarning(ioError);
-            return String.format("Path %s could not be resolved to an absolute path", resourcePath.toString());
-        }
-        return resourcePath.toString();
-    }
-
-    private static void printStacktraceWithIgnoreWarning(Throwable throwable) {
-        System.err.println("The following exception/error occured during file-access-log-agent output computation and was ignored:");
-        throwable.printStackTrace();
     }
 
     private static void fillAccessedLists() {

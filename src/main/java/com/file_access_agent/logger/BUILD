@@ -13,6 +13,6 @@ java_library(
     #    ],
     visibility = ["//visibility:public"],
     deps = [
-        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "//src/main/java/com/file_access_agent/util/json:util_json_lib",
     ]
 )

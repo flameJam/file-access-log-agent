@@ -27,7 +27,7 @@ public class FileAccessAgent {
     // Classes whicha are instrumented for dealing with java Resources
     private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
 
-    private static final String OUTPUT_FILE_LOCATION="/home/jonas/Documents/test_output.txt";
+    private static final String OUTPUT_FILE_LOCATION="/home/jonas/Documents/test_output.json";
 
     /*
      * The premain method that is executed by the java agent before the main method of the instrumended application.

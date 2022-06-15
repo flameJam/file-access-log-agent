@@ -8,6 +8,10 @@ import java.util.Set;
 public class FileInputStreamCreatedFileRecord extends FileInputStreamCreatedRecordBase {
     private File file;
 
+    public File getFile() {
+        return file;
+    }
+
     public FileInputStreamCreatedFileRecord(FileInputStream fileInputStream, File file) {
         super(fileInputStream);
         this.file = file;

@@ -1,51 +1,75 @@
-package com.file_access_agent.logger;
+package com.file_access_agent.util.json;
 
 import java.io.IOError;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Path;
-import java.util.Set;
 
-public class ResourceAcquiredRecord extends RecordBase {
-    private URL resourceURL;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
-    public URL getResourceURL() {
-        return resourceURL;
-    }
-
-    public URI getResourceURI() {
-        return resourceURI;
-    }
-
-    public Path getPath() {
-        return path;
-    }
-
-    private URI resourceURI = null;
-
-    private Path path = null;
-
-    public ResourceAcquiredRecord(URL resourceURL) {
-        super();
-        this.resourceURL = resourceURL;
-    }
+public class URLSerializer implements JsonSerializer<URL> {
 
     @Override
-    public AccessLogger updateLists(AccessLogger accessLogger) {
-        Set<URL> accessedResources = accessLogger.getAccessedResources();
-        accessedResources.add(this.resourceURL);
-        return new AccessLogger(accessLogger, null, null, accessedResources, null);
+    public JsonElement serialize(URL src, Type typeOfSrc, JsonSerializationContext context) {
+        Gson gson = JsonUtil.getGsonTemplate().create();
+
+        if (src == null) {
+            return gson.toJsonTree(null);
+        }
+
+        JsonObject recordJsonObject = new JsonObject();
+        
+        recordJsonObject.addProperty(
+            "resourceURL", src.toString()
+            );
+        
+        URI resourceURI = computeResourceURI(src);
+
+        recordJsonObject.add(
+            "resourceURI",
+            gson.toJsonTree(resourceURI)
+        );
+
+        Path resourcePath = computeAbsolutePath(resourceURI);
+
+        recordJsonObject.add(
+            "absolute_path",
+            gson.toJsonTree(resourcePath)
+        );
+
+        return recordJsonObject;
     }
 
-    public void getJsonReady() {
+    private void jsonComputationErrorMessage(String msg, Throwable throwable) {
+        System.err.printf(msg);
+        throwable.printStackTrace();
+    }
+
+    private URI computeResourceURI(URL resourceURL) {
+        if (resourceURL == null) {
+            return null;
+        }
+        URI resourceURI= null;
         try {
             resourceURI = resourceURL.toURI();
         } catch (URISyntaxException uriSyntaxExc) {
             jsonComputationErrorMessage(String.format("URL %s could not be resolved to an URI - URISyntaxException:\n", resourceURL), uriSyntaxExc);
             uriSyntaxExc.printStackTrace();
-            return;
+        }
+
+        return resourceURI;
+    }
+
+    private Path computeAbsolutePath(URI resourceURI) {
+        if (resourceURI == null) {
+            return null;
         }
 
         Path resourcePath = null;
@@ -54,13 +78,13 @@ public class ResourceAcquiredRecord extends RecordBase {
             resourcePath = Path.of(resourceURI);
         } catch (IllegalArgumentException illArgExc) {
             jsonComputationErrorMessage(String.format(errorMessageTemplate, resourceURI, "IllegalArgumentException"), illArgExc);
-            return;
+            return null;
         } catch (FileSystemNotFoundException fileSysNotFoundExc) {
             jsonComputationErrorMessage(String.format(errorMessageTemplate, resourceURI, "FileSystemNotFoundException"), fileSysNotFoundExc);
-            return;
+            return null;
         } catch (SecurityException securityException) {
             jsonComputationErrorMessage(String.format(errorMessageTemplate, resourceURI, "SecurityException"), securityException);
-            return;
+            return null;
         }
 
         errorMessageTemplate = "Path %s could not be resolved to an absolute path - %s\n";
@@ -68,19 +92,13 @@ public class ResourceAcquiredRecord extends RecordBase {
             resourcePath = resourcePath.toAbsolutePath();
         } catch (SecurityException securityException) {
             jsonComputationErrorMessage(String.format(errorMessageTemplate, resourcePath, "SecurityException"), securityException);
-            return;
+            return null;
         } catch (IOError ioError) {
             jsonComputationErrorMessage(String.format(errorMessageTemplate, resourcePath, "IOError"), ioError);
-            return;
+            return null;
         }
 
-        path = resourcePath;
+        return resourcePath;
     }
-
-    private void jsonComputationErrorMessage(String msg, Throwable throwable) {
-        System.err.printf(msg, resourceURI);
-        throwable.printStackTrace();
-        return;
-    }
-
+    
 }

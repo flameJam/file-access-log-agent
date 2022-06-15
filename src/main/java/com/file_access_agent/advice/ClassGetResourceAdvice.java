@@ -10,7 +10,6 @@ public class ClassGetResourceAdvice {
     /** Log resource retrieval on method exit */
     @Advice.OnMethodExit()
     public static void onResourceWanted(@Advice.Return(readOnly = true) URL resourceURL) {
-        //System.out.println(method);
         if (resourceURL != null) {
             AccessLogger.logResourceAcquired(resourceURL);
         }
