@@ -18,7 +18,10 @@ public class URLSerializer implements JsonSerializer<URL> {
 
     @Override
     public JsonElement serialize(URL src, Type typeOfSrc, JsonSerializationContext context) {
-        Gson gson = JsonUtil.getGsonTemplate().create();
+        Gson gson = JsonUtil.getGsonTemplate()
+        .registerTypeAdapter(URI.class, new URISerializer())
+        .registerTypeAdapter(Path.class, new PathSerializer())
+        .create();
 
         if (src == null) {
             return gson.toJsonTree(null);
@@ -38,17 +41,24 @@ public class URLSerializer implements JsonSerializer<URL> {
         );
 
         Path resourcePath = computeAbsolutePath(resourceURI);
-
-        recordJsonObject.add(
-            "absolute_path",
-            gson.toJsonTree(resourcePath)
-        );
+        if (resourcePath == null) {
+            recordJsonObject.add(
+            "absolutePath",
+            gson.toJsonTree(null)
+            );
+        } else {
+            // TODO why does the PathSerializer not work! >___<
+            recordJsonObject.add(
+                "absolutePath",
+                gson.toJsonTree(resourcePath.toString())
+            );
+        }
 
         return recordJsonObject;
     }
 
     private void jsonComputationErrorMessage(String msg, Throwable throwable) {
-        System.err.printf(msg);
+        System.out.printf(msg);
         throwable.printStackTrace();
     }
 

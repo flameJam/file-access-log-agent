@@ -4,5 +4,8 @@ java_library(
     deps = [
         "@maven//:com_google_code_gson_gson",
     ],
-    visibility = ["//src/main/java/com/file_access_agent/logger:__pkg__"]
+    visibility = [
+        "//src/main/java/com/file_access_agent/logger:__pkg__",
+        "//src/test/java/com/file_access_agent/util/json:__pkg__",
+        ]
 )

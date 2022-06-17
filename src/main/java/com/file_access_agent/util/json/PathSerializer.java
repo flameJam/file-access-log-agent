@@ -14,8 +14,10 @@ public class PathSerializer implements JsonSerializer<Path> {
     public JsonElement serialize(Path src, Type typeOfSrc, JsonSerializationContext context) {
         Gson gson = JsonUtil.getGsonTemplate().create();
         if (src != null) {
-            return gson.toJsonTree(src.toString());
+            String path = src.toString();
+            return gson.toJsonTree(path);
         }
+
         return gson.toJsonTree(null);
     }
     
