@@ -6,7 +6,7 @@ This is part of my masters thesis with the goal to include non-code artifacts, s
 ## Installation
 
 Once you cloned the project and installed bazel,
-adjust the `OUTPUT_FILE_LOCATION` in `src/main/java/com/file_access_agent/FileAccessAgent.java` to your needs. 
+adjust the `output_file_location` and the `output_file_prefix` in `file_access_agent.properties` to your needs. 
 
 Then use
 
@@ -30,5 +30,5 @@ Suppose you want to use the agent on your simple HelloWorld-Program:
 
 `java -javaagent:<FileAccessAgent_deploy.jar>=<loggerBin_deploy.jar> yourHelloWorld.java`
 
-The file containing the output will be a simple formatted text file, the location of which is currently still hardcoded in `src/main/java/com/file_access_agent/FileAccessAgent.java:OUTPUT_FILE_LOCATION`
+The file containing the output will be a simple formatted JSON file, the location of which is configured in `file_access_agent.properties:output_file_location`
 
