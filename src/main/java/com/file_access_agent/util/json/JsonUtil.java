@@ -29,7 +29,7 @@ public class JsonUtil {
         .serializeNulls();
     }
 
-    public static String getOutputJsonString(Set<File> files, Set<URL> resources) {
+    public static String getOutputJsonString(Set<File> files, Set<URL> resources, long testTimestamp) {
         Gson gson = JsonUtil.getGsonTemplate()
             .registerTypeAdapter(URL.class, new URLSerializer())
             .registerTypeAdapter(URI.class, new URISerializer())
@@ -40,7 +40,7 @@ public class JsonUtil {
         JsonObject accessLoggerObject = new JsonObject();
 
         // using the milliseconds since the beginning of 1970 as timestamp, similar to the implementation in Teamscale
-        accessLoggerObject.add("testing_timestamp", gson.toJsonTree(Long.toString(System.currentTimeMillis())));
+        accessLoggerObject.add("testing_timestamp", gson.toJsonTree(Long.toString(testTimestamp)));
 
         accessLoggerObject.add("accessed_files", gson.toJsonTree(files));
 

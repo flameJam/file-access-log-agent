@@ -13,5 +13,11 @@ java_binary(
         "//src/main/java/com/file_access_agent/logger:loggerLib",
         ],
     data = ["//src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar"],
+    resources = ["//:FileAccessResources"],
+)
+
+filegroup (
+    name = "FileAccessResources",
+    srcs = ["file_access_agent.properties"],
 )
 

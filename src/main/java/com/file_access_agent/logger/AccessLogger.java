@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import com.file_access_agent.util.json.JsonUtil;
@@ -87,10 +88,28 @@ public class AccessLogger {
 
     public static void provideOutput(String outputPath) {
         fillAccessedLists();
-        getLogger().writeToOutputFile(outputPath);
+        long testTimestamp = System.currentTimeMillis();
+        getLogger().writeToOutputFile(getOutputFilePath(testTimestamp), testTimestamp);
     }
 
-    private void writeToOutputFile(String outputPath) {
+    private static String getOutputFilePath(long testTimestamp) {
+        Properties agentProps = new Properties();
+        try {
+            agentProps.load(ClassLoader.getSystemResourceAsStream("file_access_agent.properties"));
+        } catch (IOException e) {
+            System.err.println("FileAccessAgent failed to get its properties!");
+            e.printStackTrace();
+            return null;
+        }
+
+        String outputFilePath = agentProps.getProperty("output_file_location");
+        String outputFilePrefix = agentProps.getProperty("output_file_prefix");
+        return outputFilePath + "/" + outputFilePrefix + testTimestamp + ".json";
+
+    }
+
+
+    private void writeToOutputFile(String outputPath, long testTimestamp) {
         FileWriter fileWriter;
         try {
             fileWriter = new FileWriter(outputPath, false);
@@ -102,7 +121,7 @@ public class AccessLogger {
 
         BufferedWriter writer = new BufferedWriter(fileWriter);
         
-       String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources());
+       String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources(), testTimestamp);
         
         try {
             writer.write(content);
