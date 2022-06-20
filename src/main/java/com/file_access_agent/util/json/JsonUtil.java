@@ -39,6 +39,9 @@ public class JsonUtil {
         
         JsonObject accessLoggerObject = new JsonObject();
 
+        // using the milliseconds since the beginning of 1970 as timestamp, similar to the implementation in Teamscale
+        accessLoggerObject.add("testing_timestamp", gson.toJsonTree(Long.toString(System.currentTimeMillis())));
+
         accessLoggerObject.add("accessed_files", gson.toJsonTree(files));
 
         accessLoggerObject.add("accessed_resources", gson.toJsonTree(resources));
