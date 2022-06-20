@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.jar.JarFile;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -37,18 +39,14 @@ public class FileAccessAgent {
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
 
-        // append the Logger-jar to the bootstrap class loader to make them available when using net.bytebuddy.asm.Advice for
-        // instrumenting java classes.
-        if (args != null) {
-            inst.appendToBootstrapClassLoaderSearch(new JarFile(args));
-        } else {
-                String jarLocation = System.getenv("LoggerJarLocation");
-                if (jarLocation == null) {
-                    System.err.println("The location of the jar for the logger has to be specified as agent argument\n" +
-                    "or as environment variable \"LoggerJarLocation\"!");
-                    return;
-                }
-        }
+
+        // get the loggerBin.jar file from the resources to be able to add it to the BootstrapClassloader
+        Path tmpJarPath = Files.createTempFile("loggerBin_tmp", ".jar");
+        Files.copy(ClassLoader.getSystemResourceAsStream("loggerBin.jar"), tmpJarPath, StandardCopyOption.REPLACE_EXISTING);
+
+        // add the com.file_access_agent.logger.* classes and their dependencies from loggerBin.jar to the classloader,
+        // to be able to use them in the instrumentation (specifically , in the code added to the java-classes via advice)
+        inst.appendToBootstrapClassLoaderSearch(new JarFile(tmpJarPath.toFile()));
 
         // Create the directory for storing jar files during bootclass injection
         final File tempFolder;

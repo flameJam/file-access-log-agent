@@ -11,13 +11,26 @@ java_binary(
         "@maven//:net_bytebuddy_byte_buddy",
         "//src/main/java/com/file_access_agent/transformer:transformers",
         "//src/main/java/com/file_access_agent/logger:loggerLib",
+        "//:CopyLoggerBin",
         ],
     data = ["//src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar"],
-    resources = ["//:FileAccessResources"],
+    resources = [
+        "//:FileAccessResources",
+    ],
 )
 
 filegroup (
     name = "FileAccessResources",
-    srcs = ["file_access_agent.properties"],
+    srcs = [
+        "file_access_agent.properties",
+        "loggerBin.jar",
+    ],
+)
+
+genrule (
+    name = "CopyLoggerBin",
+    srcs = ["//src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar"],
+    outs = ["loggerBin.jar"],
+    cmd_bash = "cp $(location //src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar) $(OUTS)",
 )
 
