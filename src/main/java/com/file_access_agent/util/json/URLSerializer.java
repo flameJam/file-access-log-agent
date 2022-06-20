@@ -14,8 +14,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+/** Serializer for URLs */
 public class URLSerializer implements JsonSerializer<URL> {
 
+    /**
+     * Since the URL is the type used for storing resources, this does not only return the string of the URL,
+     * but also its URI and absolute path (if possible)
+    */
     @Override
     public JsonElement serialize(URL src, Type typeOfSrc, JsonSerializationContext context) {
         Gson gson = JsonUtil.getGsonTemplate()
@@ -62,6 +67,7 @@ public class URLSerializer implements JsonSerializer<URL> {
         throwable.printStackTrace();
     }
 
+    /** Compute URI from URL */
     private URI computeResourceURI(URL resourceURL) {
         if (resourceURL == null) {
             return null;
@@ -77,11 +83,13 @@ public class URLSerializer implements JsonSerializer<URL> {
         return resourceURI;
     }
 
+    /** Compute absolute Path from URI */
     private Path computeAbsolutePath(URI resourceURI) {
         if (resourceURI == null) {
             return null;
         }
 
+        // get the path which still might be relative
         Path resourcePath = null;
         String errorMessageTemplate = "URI %s could not be resolved to a path - %s\n";
         try {
@@ -97,6 +105,7 @@ public class URLSerializer implements JsonSerializer<URL> {
             return null;
         }
 
+        // get the absolute path
         errorMessageTemplate = "Path %s could not be resolved to an absolute path - %s\n";
         try {
             resourcePath = resourcePath.toAbsolutePath();

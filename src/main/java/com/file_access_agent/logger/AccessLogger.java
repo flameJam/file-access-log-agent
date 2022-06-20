@@ -17,16 +17,31 @@ import java.util.Set;
 
 import com.file_access_agent.util.json.JsonUtil;
 
+/** 
+ * Class used during in instrumentation code to log the access to different resources, files,...
+ * Can "keep state" and compute dependencies between different "log-entries"
+ * but does all these computations only when told to compute & generate the outputfile
+ * in order to impair the instrumented target's performance as little as possible.
+ */
 public class AccessLogger {
 
+    /** the used AccessLogger Instance, used to implement a Singleton */
+    // TODO make the constructors private!
     private static AccessLogger ACCESS_LOGGER;
 
-
+    /** the List of Records recorded/logged during testing*/
     private List<RecordBase> records;
+
+    /** the list of accessed files */
     private Set<File> accessedFiles;
+
+    /** the list of access resources -> URLs */
     private Set<URL> accessedResources;
+
+    /** a list to map FileInputStreams to Files to log when a file was read (currently unused) */
     private Map<FileInputStream, File> fileInputStreamMap;
 
+    
     public Map<FileInputStream, File> getFileInputStreamMap() {
         return fileInputStreamMap;
     }
@@ -43,6 +58,7 @@ public class AccessLogger {
         return accessedResources;
     }
  
+    /** empty constructor */
     public AccessLogger() {
         records = new ArrayList<>();
         accessedFiles = new HashSet<>();
@@ -57,6 +73,7 @@ public class AccessLogger {
         fileInputStreamMap = oldVersion.getFileInputStreamMap();
     }
 
+    /** Constructor to replace the old AccessLogger with a new one, only knowing which attributes have to be replaced at runtime. */
     public AccessLogger(AccessLogger oldVersion, List<RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
     Map<FileInputStream, File> fileInputStreamMap) {
         this(oldVersion);
@@ -74,24 +91,29 @@ public class AccessLogger {
         }
     }
 
+    /** log that a FileInputStream was created with the file that provides its input */
     public static void logFileInputStreamCreated(FileInputStream fileInputStream, File file) {
         getLogger().appendRecord(new FileInputStreamCreatedFileRecord(fileInputStream, file));
     }
 
+    /** log that a FileInputStream was created with the FileDescriptor was used to provide its input */
     public static void logFileInputStreamCreated(FileInputStream fileInputStream, FileDescriptor fileDescriptor) {
         getLogger().appendRecord(new FileInputStreamCreatedFileDescriptorRecord(fileInputStream, fileDescriptor));
     }
 
+    /** log an acquired resource */
     public static void logResourceAcquired(URL resourceURL) {
         getLogger().appendRecord(new ResourceAcquiredRecord(resourceURL));
     }
 
+    /** compute the accessed resources & files and put them into the output file */
     public static void provideOutput(String outputPath) {
         fillAccessedLists();
         long testTimestamp = System.currentTimeMillis();
         getLogger().writeToOutputFile(getOutputFilePath(testTimestamp), testTimestamp);
     }
 
+    /** compute the output file path from the file_access_agent.properties */
     private static String getOutputFilePath(long testTimestamp) {
         Properties agentProps = new Properties();
         try {
@@ -108,7 +130,7 @@ public class AccessLogger {
 
     }
 
-
+    /**  write this AccessLoggers contents to a file ath the given location */
     private void writeToOutputFile(String outputPath, long testTimestamp) {
         FileWriter fileWriter;
         try {
@@ -121,7 +143,7 @@ public class AccessLogger {
 
         BufferedWriter writer = new BufferedWriter(fileWriter);
         
-       String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources(), testTimestamp);
+        String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources(), testTimestamp);
         
         try {
             writer.write(content);
@@ -139,6 +161,7 @@ public class AccessLogger {
     
     }
 
+    // compute the accessed files and resources from the records
     private static void fillAccessedLists() {
 
         List<RecordBase> records = getLogger().records;
@@ -151,6 +174,7 @@ public class AccessLogger {
         this.records.add(record);
     }
 
+    /** the only method that should be used to get the AccessLogger to ensure a singleton */
     private static AccessLogger getLogger() {
         if (ACCESS_LOGGER == null) {
             ACCESS_LOGGER = new AccessLogger();

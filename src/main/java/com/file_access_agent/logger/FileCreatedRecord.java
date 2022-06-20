@@ -11,7 +11,6 @@ public class FileCreatedRecord extends RecordBase {
 
     @Override
     public AccessLogger updateLists(AccessLogger accessLogger) {
-        // TODO Auto-generated method stub
         return accessLogger;
     }
 }

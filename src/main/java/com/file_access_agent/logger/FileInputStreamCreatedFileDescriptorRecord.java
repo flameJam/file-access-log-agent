@@ -3,6 +3,7 @@ package com.file_access_agent.logger;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 
+/** Record storing a FileInputStream that was created using the given FileDescriptor (currently unused) */
 public class FileInputStreamCreatedFileDescriptorRecord extends FileInputStreamCreatedRecordBase {
     private FileDescriptor fileDescriptor;
 

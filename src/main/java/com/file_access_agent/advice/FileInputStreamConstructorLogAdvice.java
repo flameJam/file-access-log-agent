@@ -18,6 +18,7 @@ public class FileInputStreamConstructorLogAdvice {
          if (firstArgumentObject instanceof File) {
             AccessLogger.logFileInputStreamCreated(fileInputStream, (File) firstArgumentObject);
         } else if (firstArgumentObject instanceof FileDescriptor) {
+            // currently not used
             // I'm unsure whether we need this constructor since the FileDescriptor for Files can only come from InputStreams,
             // so at some point there has to be a FileInputStream (I guess?)
             String msg = String.format("FileInputStream (%s) has just been created for FileDescriptor: %s\n", 

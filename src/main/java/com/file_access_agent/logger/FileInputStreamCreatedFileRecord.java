@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.util.Map;
 import java.util.Set;
 
+/** Record storing a FileInputStream that was created using the given File */
 public class FileInputStreamCreatedFileRecord extends FileInputStreamCreatedRecordBase {
     private File file;
 
