@@ -13,9 +13,9 @@ public class FileInputStreamCreatedFileDescriptorRecord extends FileInputStreamC
     }
 
     @Override
-    public AccessLogger updateLists(AccessLogger accessLogger) {
+    public void updateLists(AccessLogger accessLogger) {
         // TODO Is this Record even necessary?
-        return accessLogger;
+        return;
     }
 
 }

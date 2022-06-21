@@ -19,11 +19,11 @@ public class FileInputStreamCreatedFileRecord extends FileInputStreamCreatedReco
     }
 
     @Override
-    public AccessLogger updateLists(AccessLogger accessLogger) {
+    public void updateLists(AccessLogger accessLogger) {
         Set<File> accessedFiles = accessLogger.getAccessedFiles();
         accessedFiles.add(this.file);
         Map<FileInputStream, File> fileInputStreamMap = accessLogger.getFileInputStreamMap();
         fileInputStreamMap.put(this.fileInputStream, this.file);
-        return new AccessLogger(accessLogger, null, accessedFiles, null, fileInputStreamMap);
+        AccessLogger.updateLogger(null, accessedFiles, null, fileInputStreamMap);
     }
 }

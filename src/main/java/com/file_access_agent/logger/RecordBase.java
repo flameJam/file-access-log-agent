@@ -10,6 +10,6 @@ public abstract class RecordBase {
     }
 
     // abstract method to update the lists inside an AccessLogger
-    public abstract AccessLogger updateLists(AccessLogger accessLogger);
+    public abstract void updateLists(AccessLogger accessLogger);
 
 }

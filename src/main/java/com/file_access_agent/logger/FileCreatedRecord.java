@@ -11,7 +11,7 @@ public class FileCreatedRecord extends RecordBase {
     }
 
     @Override
-    public AccessLogger updateLists(AccessLogger accessLogger) {
-        return accessLogger;
+    public void updateLists(AccessLogger accessLogger) {
+        return;
     }
 }

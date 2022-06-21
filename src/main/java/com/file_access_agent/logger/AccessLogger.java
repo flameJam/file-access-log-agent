@@ -59,14 +59,14 @@ public class AccessLogger {
     }
  
     /** empty constructor */
-    public AccessLogger() {
+    private AccessLogger() {
         records = new ArrayList<>();
         accessedFiles = new HashSet<>();
         accessedResources = new HashSet<>();
         fileInputStreamMap = new HashMap<>();
     }
 
-    public AccessLogger(AccessLogger oldVersion) {
+    private AccessLogger(AccessLogger oldVersion) {
         records = oldVersion.getRecords();
         accessedFiles = oldVersion.getAccessedFiles();
         accessedResources = oldVersion.getAccessedResources();
@@ -74,7 +74,7 @@ public class AccessLogger {
     }
 
     /** Constructor to replace the old AccessLogger with a new one, only knowing which attributes have to be replaced at runtime. */
-    public AccessLogger(AccessLogger oldVersion, List<RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
+    private AccessLogger(AccessLogger oldVersion, List<RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
     Map<FileInputStream, File> fileInputStreamMap) {
         this(oldVersion);
         if (records != null) {
@@ -89,6 +89,11 @@ public class AccessLogger {
         if (fileInputStreamMap != null) {
             this.fileInputStreamMap = fileInputStreamMap;
         }
+    }
+
+    public static void updateLogger(List<RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
+    Map<FileInputStream, File> fileInputStreamMap) {
+        ACCESS_LOGGER = new AccessLogger(getLogger(), records , accessedFiles, accessedResources, fileInputStreamMap);
     }
 
     /** log that a FileInputStream was created with the file that provides its input */
@@ -166,7 +171,9 @@ public class AccessLogger {
 
         List<RecordBase> records = getLogger().records;
         for (RecordBase record: records) {
-           ACCESS_LOGGER = record.updateLists(getLogger());
+            // I don't really like this, this implementation with "side effects" due to missing return values...
+            // but for now it is there to enforce the singleton principle
+           record.updateLists(getLogger());
         }
     }
 

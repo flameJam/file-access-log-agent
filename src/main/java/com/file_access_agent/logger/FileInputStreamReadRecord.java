@@ -9,8 +9,9 @@ public class FileInputStreamReadRecord extends FileInputStreamRecordBase{
     }
 
     @Override
-    public AccessLogger updateLists(AccessLogger accessLogger) {
-        // TODO add if we add "read" to statuses of files
-        return accessLogger;
+    public void updateLists(AccessLogger accessLogger) {
+        // TODO Is this Record even necessary?
+        return;
     }
+
 }
