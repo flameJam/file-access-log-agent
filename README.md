@@ -24,7 +24,7 @@ The resulting jars will be
 ## Usage
 Suppose you want to use the agent on your simple HelloWorld-Program:
 
-`java -javaagent:<FileAccessAgent_deploy.jar>=<loggerBin_deploy.jar> yourHelloWorld.java`
+`java -javaagent:your/path/to/FileAccessAgent_deploy.jar yourHelloWorld.java`
 
 The file containing the output will be a simple formatted JSON file, the location of which is configured in `file_access_agent.properties:output_file_location`
 
