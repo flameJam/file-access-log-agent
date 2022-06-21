@@ -111,7 +111,7 @@ public class AccessLogger {
     }
 
     /** compute the accessed resources & files and put them into the output file */
-    public static void provideOutput(String outputPath) {
+    public static void provideOutput() {
         fillAccessedLists();
         long testTimestamp = System.currentTimeMillis();
         getLogger().writeToOutputFile(getOutputFilePath(testTimestamp), testTimestamp);

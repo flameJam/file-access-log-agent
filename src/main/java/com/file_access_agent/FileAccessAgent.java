@@ -29,8 +29,6 @@ public class FileAccessAgent {
     // Classes whicha are instrumented for dealing with java Resources
     private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
 
-    private static final String OUTPUT_FILE_LOCATION="/home/jonas/Documents/test_output.json";
-
     /*
      * The premain method that is executed by the java agent before the main method of the instrumended application.
      * builds and installs all AgentBuilders necessary to watch for File-Accesses.
@@ -73,7 +71,7 @@ public class FileAccessAgent {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                AccessLogger.provideOutput(OUTPUT_FILE_LOCATION);
+                AccessLogger.provideOutput();
             }
         });
     }
