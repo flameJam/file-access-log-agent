@@ -9,6 +9,7 @@ public abstract class RecordBase {
         this.recordId = recordCounter++;
     }
 
+    // abstract method to update the lists inside an AccessLogger
     public abstract AccessLogger updateLists(AccessLogger accessLogger);
 
 }

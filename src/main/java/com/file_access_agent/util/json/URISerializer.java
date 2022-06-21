@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+/** JSON Serializer for URIs */
 public class URISerializer implements JsonSerializer<URI> {
 
     @Override
