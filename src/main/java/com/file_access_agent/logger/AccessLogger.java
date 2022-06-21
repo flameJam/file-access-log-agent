@@ -26,7 +26,6 @@ import com.file_access_agent.util.json.JsonUtil;
 public class AccessLogger {
 
     /** the used AccessLogger Instance, used to implement a Singleton */
-    // TODO make the constructors private!
     private static AccessLogger ACCESS_LOGGER;
 
     /** the List of Records recorded/logged during testing*/
