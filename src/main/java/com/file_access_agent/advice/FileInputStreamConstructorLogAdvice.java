@@ -16,7 +16,10 @@ public class FileInputStreamConstructorLogAdvice {
      @Advice.Argument(0) Object firstArgumentObject) {
          
          if (firstArgumentObject instanceof File) {
-            AccessLogger.logFileInputStreamCreated(fileInputStream, (File) firstArgumentObject);
+            int recordId = AccessLogger.logFileInputStreamCreated(fileInputStream, (File) firstArgumentObject);
+            if ("true".equals(System.getenv("FILE_ACCESS_AGENT_DEBUG"))) {
+                AccessLogger.logStackTrace(recordId, Thread.currentThread().getStackTrace());
+            }
         } else if (firstArgumentObject instanceof FileDescriptor) {
             // currently not used
             // I'm unsure whether we need this constructor since the FileDescriptor for Files can only come from InputStreams,
@@ -24,6 +27,8 @@ public class FileInputStreamConstructorLogAdvice {
             String msg = String.format("FileInputStream (%s) has just been created for FileDescriptor: %s\n", 
             fileInputStream.toString(),
             ((FileDescriptor) firstArgumentObject).toString());
+
+            
             
             // Commented out to get to a first usable prototype
             //System.out.printf(msg);

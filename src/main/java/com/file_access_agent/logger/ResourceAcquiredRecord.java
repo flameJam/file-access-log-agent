@@ -1,6 +1,7 @@
 package com.file_access_agent.logger;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.Set;
 
 /** Record storing a acquired resource -> URL */
@@ -20,6 +21,12 @@ public class ResourceAcquiredRecord extends RecordBase {
     public void updateLists(AccessLogger accessLogger) {
         Set<URL> accessedResources = accessLogger.getAccessedResources();
         accessedResources.add(this.resourceURL);
-        AccessLogger.updateLogger(null, null, accessedResources, null);
+        AccessLogger.updateLogger(null, null, accessedResources, null, null);
+    }
+
+    @Override
+    public Map<String, String> getDebugInfo() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package com.file_access_agent.logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +25,17 @@ public class FileInputStreamCreatedFileRecord extends FileInputStreamCreatedReco
         accessedFiles.add(this.file);
         Map<FileInputStream, File> fileInputStreamMap = accessLogger.getFileInputStreamMap();
         fileInputStreamMap.put(this.fileInputStream, this.file);
-        AccessLogger.updateLogger(null, accessedFiles, null, fileInputStreamMap);
+        AccessLogger.updateLogger(null, accessedFiles, null, fileInputStreamMap, null);
+    }
+
+    @Override
+    public Map<String, String> getDebugInfo() {
+        Map<String, String> debugInfo = new HashMap<>();
+
+        debugInfo.put("record_type", "FileInputStreamCreatedFileRecord");
+        debugInfo.put("FileInputStream", fileInputStream.toString());
+        debugInfo.put("created_for_file", file.getAbsolutePath());
+
+        return debugInfo;
     }
 }

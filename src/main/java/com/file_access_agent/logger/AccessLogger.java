@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +30,7 @@ public class AccessLogger {
     private static AccessLogger ACCESS_LOGGER;
 
     /** the List of Records recorded/logged during testing*/
-    private List<RecordBase> records;
+    private Map<Integer, RecordBase> records;
 
     /** the list of accessed files */
     private Set<File> accessedFiles;
@@ -40,12 +41,17 @@ public class AccessLogger {
     /** a list to map FileInputStreams to Files to log when a file was read (currently unused) */
     private Map<FileInputStream, File> fileInputStreamMap;
 
-    
+    private List<String> recordDebugInfos;
+
+    public List<String> getRecordDebugInfos() {
+        return recordDebugInfos;
+    }
+
     public Map<FileInputStream, File> getFileInputStreamMap() {
         return fileInputStreamMap;
     }
 
-    public List<RecordBase> getRecords() {
+    public Map<Integer, RecordBase> getRecords() {
         return records;
     }
 
@@ -59,10 +65,11 @@ public class AccessLogger {
  
     /** empty constructor */
     private AccessLogger() {
-        records = new ArrayList<>();
+        records = new HashMap<>();
         accessedFiles = new HashSet<>();
         accessedResources = new HashSet<>();
         fileInputStreamMap = new HashMap<>();
+        recordDebugInfos = new ArrayList<>();
     }
 
     private AccessLogger(AccessLogger oldVersion) {
@@ -70,11 +77,12 @@ public class AccessLogger {
         accessedFiles = oldVersion.getAccessedFiles();
         accessedResources = oldVersion.getAccessedResources();
         fileInputStreamMap = oldVersion.getFileInputStreamMap();
+        recordDebugInfos = oldVersion.getRecordDebugInfos();
     }
 
     /** Constructor to replace the old AccessLogger with a new one, only knowing which attributes have to be replaced at runtime. */
-    private AccessLogger(AccessLogger oldVersion, List<RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
-    Map<FileInputStream, File> fileInputStreamMap) {
+    private AccessLogger(AccessLogger oldVersion, Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
+    Map<FileInputStream, File> fileInputStreamMap, List<String> recordDebugInfos) {
         this(oldVersion);
         if (records != null) {
             this.records = records;
@@ -88,26 +96,42 @@ public class AccessLogger {
         if (fileInputStreamMap != null) {
             this.fileInputStreamMap = fileInputStreamMap;
         }
+        if (recordDebugInfos != null) {
+            this.recordDebugInfos = recordDebugInfos;
+        }
     }
 
-    public static void updateLogger(List<RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
-    Map<FileInputStream, File> fileInputStreamMap) {
-        ACCESS_LOGGER = new AccessLogger(getLogger(), records , accessedFiles, accessedResources, fileInputStreamMap);
+    public static void updateLogger(Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
+    Map<FileInputStream, File> fileInputStreamMap, List<String> recordDebugInfos) {
+        ACCESS_LOGGER = new AccessLogger(getLogger(), records , accessedFiles, accessedResources, fileInputStreamMap, recordDebugInfos);
     }
 
     /** log that a FileInputStream was created with the file that provides its input */
-    public static void logFileInputStreamCreated(FileInputStream fileInputStream, File file) {
-        getLogger().appendRecord(new FileInputStreamCreatedFileRecord(fileInputStream, file));
+    public static int logFileInputStreamCreated(FileInputStream fileInputStream, File file) {
+        FileInputStreamCreatedFileRecord record = new FileInputStreamCreatedFileRecord(fileInputStream, file);
+        getLogger().appendRecord(record);
+        return record.recordId;
     }
 
     /** log that a FileInputStream was created with the FileDescriptor was used to provide its input */
-    public static void logFileInputStreamCreated(FileInputStream fileInputStream, FileDescriptor fileDescriptor) {
-        getLogger().appendRecord(new FileInputStreamCreatedFileDescriptorRecord(fileInputStream, fileDescriptor));
+    public static int logFileInputStreamCreated(FileInputStream fileInputStream, FileDescriptor fileDescriptor) {
+        FileInputStreamCreatedFileDescriptorRecord record = new FileInputStreamCreatedFileDescriptorRecord(fileInputStream, fileDescriptor);
+        getLogger().appendRecord(record);
+        return record.recordId;
     }
 
     /** log an acquired resource */
-    public static void logResourceAcquired(URL resourceURL) {
-        getLogger().appendRecord(new ResourceAcquiredRecord(resourceURL));
+    public static int logResourceAcquired(URL resourceURL) {
+        ResourceAcquiredRecord record = new ResourceAcquiredRecord(resourceURL);
+        getLogger().appendRecord(record);
+        return record.recordId;
+    }
+
+    /** log the stacktrace to a given recordId */
+    public static int logStackTrace(int recordId, StackTraceElement[] stackTrace) {
+        StackTraceRecord record = new StackTraceRecord(recordId, stackTrace);
+        getLogger().appendRecord(record);
+        return record.recordId;
     }
 
     /** compute the accessed resources & files and put them into the output file */
@@ -147,7 +171,7 @@ public class AccessLogger {
 
         BufferedWriter writer = new BufferedWriter(fileWriter);
         
-        String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources(), testTimestamp);
+        String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources(), getRecordDebugInfos(), testTimestamp);
         
         try {
             writer.write(content);
@@ -168,16 +192,16 @@ public class AccessLogger {
     // compute the accessed files and resources from the records
     private static void fillAccessedLists() {
 
-        List<RecordBase> records = getLogger().records;
-        for (RecordBase record: records) {
+        Collection<RecordBase> records = getLogger().records.values();
+        for (RecordBase recordObj: records) {
             // I don't really like this, this implementation with "side effects" due to missing return values...
             // but for now it is there to enforce the singleton principle
-           record.updateLists(getLogger());
+            ((RecordBase)recordObj).updateLists(getLogger());
         }
     }
 
     public void appendRecord(RecordBase record) {
-        this.records.add(record);
+        this.records.put(record.recordId, record);
     }
 
     /** the only method that should be used to get the AccessLogger to ensure a singleton */

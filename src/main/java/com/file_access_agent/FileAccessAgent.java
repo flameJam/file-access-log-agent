@@ -29,6 +29,10 @@ public class FileAccessAgent {
     // Classes whicha are instrumented for dealing with java Resources
     private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
 
+    private final static String AGENT_DEBUG_ENV_VAR_NAME = "FILE_ACCESS_AGENT_DEBUG";
+
+    private static boolean AGENT_DEBUG_MODE = false;
+
     /*
      * The premain method that is executed by the java agent before the main method of the instrumended application.
      * builds and installs all AgentBuilders necessary to watch for File-Accesses.
@@ -37,6 +41,7 @@ public class FileAccessAgent {
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
 
+        AGENT_DEBUG_MODE = "true".equals(System.getenv(AGENT_DEBUG_ENV_VAR_NAME));
 
         // get the loggerBin.jar file from the resources to be able to add it to the BootstrapClassloader
         Path tmpJarPath = Files.createTempFile("loggerBin_tmp", ".jar");
@@ -96,13 +101,23 @@ public class FileAccessAgent {
 
     /** AgentBuilder Template reused in all other AgentBuilder-methods. */
     private static AgentBuilder.Identified.Narrowable getAgentBuilderTemplate(Instrumentation inst, File tempFolder, ElementMatcher<? super TypeDescription> typeMatcher) {
+        if (AGENT_DEBUG_MODE) {
+            return new AgentBuilder.Default()
+            .disableClassFormatChanges()
+            .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+            .with(AgentBuilder.RedefinitionStrategy.Listener.StreamWriting.toSystemError())
+            .with(AgentBuilder.Listener.StreamWriting.toSystemError().withTransformationsOnly())
+            .with(new AgentBuilder.InjectionStrategy.UsingInstrumentation(inst, tempFolder))
+            .with(AgentBuilder.InstallationListener.StreamWriting.toSystemError())
+            .ignore(ElementMatchers.not(typeMatcher))
+            .ignore(ElementMatchers.nameStartsWith("net.bytebuddy"))
+            .type(typeMatcher);
+        }
+
         return new AgentBuilder.Default()
         .disableClassFormatChanges()
         .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-        //.with(AgentBuilder.RedefinitionStrategy.Listener.StreamWriting.toSystemError())
-        //.with(AgentBuilder.Listener.StreamWriting.toSystemError().withTransformationsOnly())
         .with(new AgentBuilder.InjectionStrategy.UsingInstrumentation(inst, tempFolder))
-        //.with(AgentBuilder.InstallationListener.StreamWriting.toSystemError())
         .ignore(ElementMatchers.not(typeMatcher))
         .ignore(ElementMatchers.nameStartsWith("net.bytebuddy"))
         .type(typeMatcher);
