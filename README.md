@@ -28,3 +28,13 @@ Suppose you want to use the agent on your simple HelloWorld-Program:
 
 The file containing the output will be a simple formatted JSON file, the location of which is configured in `file_access_agent.properties:output_file_location`
 
+### Debug Mode
+For activating the debug mode set the environment variable `FILE_ACCESS_AGENT_DEBUG=true`.
+As a Result the Agent will
+1. output info on instrumentation and errors during the instrumentation
+2. log the stacktrace which triggered another Log
+    - currently only works for `FileInpoutStreamCreatedFileRecord`
+3. add a new section to the output file which contains the stacktrace and other info for each corresponding record
+
+Unfortunately the stacktrace logging probably has a bigger impact on the instrumented programs' performance.
+
