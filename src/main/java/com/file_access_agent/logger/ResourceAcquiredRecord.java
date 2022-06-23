@@ -1,8 +1,13 @@
 package com.file_access_agent.logger;
 
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import com.file_access_agent.util.json.URLSerializer;
 
 /** Record storing a acquired resource -> URL */
 public class ResourceAcquiredRecord extends RecordBase {
@@ -26,7 +31,18 @@ public class ResourceAcquiredRecord extends RecordBase {
 
     @Override
     public Map<String, String> getDebugInfo() {
-        // TODO Auto-generated method stub
-        return null;
+        Map<String, String> debugInfo = new HashMap<>();
+
+        debugInfo.put("record_type", "ResourceAcquiredRecord");
+
+        debugInfo.put("URL", resourceURL.toString());
+
+        URI resourceURI = URLSerializer.computeResourceURI(resourceURL);
+        debugInfo.put("URI", resourceURI.toString());
+        
+        Path absoluteResourcePath = URLSerializer.computeAbsolutePath(resourceURI);
+        debugInfo.put("absolute_path", absoluteResourcePath.toString());
+
+        return debugInfo;
     }
 }

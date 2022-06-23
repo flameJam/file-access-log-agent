@@ -62,13 +62,13 @@ public class URLSerializer implements JsonSerializer<URL> {
         return recordJsonObject;
     }
 
-    private void jsonComputationErrorMessage(String msg, Throwable throwable) {
+    private static void jsonComputationErrorMessage(String msg, Throwable throwable) {
         System.out.printf(msg);
         throwable.printStackTrace();
     }
 
     /** Compute URI from URL */
-    private URI computeResourceURI(URL resourceURL) {
+    public static URI computeResourceURI(URL resourceURL) {
         if (resourceURL == null) {
             return null;
         }
@@ -84,7 +84,7 @@ public class URLSerializer implements JsonSerializer<URL> {
     }
 
     /** Compute absolute Path from URI */
-    private Path computeAbsolutePath(URI resourceURI) {
+    public static Path computeAbsolutePath(URI resourceURI) {
         if (resourceURI == null) {
             return null;
         }
