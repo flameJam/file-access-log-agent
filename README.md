@@ -38,3 +38,12 @@ As a Result the Agent will
 
 Unfortunately the stacktrace logging probably has a bigger impact on the instrumented programs' performance.
 
+### Special Use Cases
+#### Tomcat
+
+add the argument `-javaagent:path/to/agent.jar` to the environment variable `CATALINA_OPTS`:
+
+- either use `export CATALINA_OPTS="$CATALINA_OPTS -javaagent:path/to/agent.jar"`
+- or add the line `CATALINA_OPTS="$CATALINA_OPTS -javaagent:path/to/agent.jar"` to `<tomcat_home>/bin/setenv.sh`
+  - you might have to create the script first and set it executable
+  - for windows the file obviously has to be named `setenv.bat`
