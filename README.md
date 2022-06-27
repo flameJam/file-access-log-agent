@@ -6,7 +6,7 @@ This is part of my masters thesis with the goal to include non-code artifacts, s
 ## Installation
 
 Once you cloned the project and installed bazel,
-adjust the `output_file_location` and the `output_file_prefix` in `file_access_agent.properties` to your needs. 
+adjust the `output_file_location` and the `output_file_prefix` in `file_access_agent.properties` to your needs. The path in here has to be either absolute or will be interpreted as relative from the working directory during the execution of the instrumented program.
 
 Then use
 
@@ -26,7 +26,13 @@ Suppose you want to use the agent on your simple HelloWorld-Program:
 
 `java -javaagent:your/path/to/FileAccessAgent_deploy.jar yourHelloWorld.java`
 
-The file containing the output will be a simple formatted JSON file, the location of which is configured in `file_access_agent.properties:output_file_location`
+The file containing the output will be a simple formatted JSON file, the location of which is configured in `file_access_agent.properties:output_file_location`.
+If you wish to override the preconfigured location export the new location to `FILE_ACCESS_AGENT_OUTPUT`, like so:
+
+`export FILE_ACCESS_AGENT_OUTPUT=/path/to/new/location/file_prefix_`
+
+The path has to be either absolute or will be interpreted as relative from the working directory during the execution of the instrumented program.
+The resulting file will look like this: `/path/to/your/location/file_prefix_<timestamp-in-millis-since-1970>.json`
 
 ### Debug Mode
 For activating the debug mode set the environment variable `FILE_ACCESS_AGENT_DEBUG=true`.
