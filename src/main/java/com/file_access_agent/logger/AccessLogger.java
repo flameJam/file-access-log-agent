@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.file_access_agent.common.util.environment.OutputFileVar;
 import com.file_access_agent.common.util.json.JsonUtil;
 
 /** 
@@ -143,6 +144,11 @@ public class AccessLogger {
 
     /** compute the output file path from the file_access_agent.properties */
     private static String getOutputFilePath(long testTimestamp) {
+
+        if (OutputFileVar.isDefined()) {
+            return OutputFileVar.getOutputPath() + "/" + OutputFileVar.getPrefix() + testTimestamp + ".json";
+        }
+
         Properties agentProps = new Properties();
         try {
             agentProps.load(ClassLoader.getSystemResourceAsStream("file_access_agent.properties"));
@@ -170,7 +176,7 @@ public class AccessLogger {
         }
 
         BufferedWriter writer = new BufferedWriter(fileWriter);
-        
+
         String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources(), getRecordDebugInfos(), testTimestamp);
         
         try {
