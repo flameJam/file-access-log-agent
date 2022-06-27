@@ -33,7 +33,7 @@ For activating the debug mode set the environment variable `FILE_ACCESS_AGENT_DE
 As a Result the Agent will
 1. output info on instrumentation and errors during the instrumentation
 2. log the stacktrace which triggered another Log
-    - currently only works for `FileInputStreamCreatedFileRecord`
+    - currently only works for `FileInputStreamCreatedFileRecord` & `ResourceAcquiredRecord` -  the only ones used in the current version
 3. add a new section to the output file which contains the stacktrace and other info for each corresponding record
 
 Unfortunately the stacktrace logging probably has a bigger impact on the instrumented programs' performance.
