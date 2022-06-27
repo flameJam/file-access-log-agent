@@ -1,4 +1,4 @@
-package com.file_access_agent.util.json;
+package com.file_access_agent.common.util.json;
 
 import java.lang.reflect.Type;
 import java.net.URI;

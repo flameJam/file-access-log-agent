@@ -3,9 +3,9 @@ java_library(
     srcs = glob(["*.java"]),
     deps = [
         "@maven//:com_google_code_gson_gson",
+        "//src/main/java/com/file_access_agent/common/util/location:util_location_lib",
     ],
     visibility = [
-        "//src/main/java/com/file_access_agent/logger:__pkg__",
-        "//src/test/java/com/file_access_agent/util/json:__pkg__",
-        ]
+        "//:__subpackages__",
+        ],
 )

@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.file_access_agent.util.json.URLSerializer;
+import com.file_access_agent.common.util.json.URLSerializer;
+import com.file_access_agent.common.util.location.LocationUtil;
 
 /** Record storing a acquired resource -> URL */
 public class ResourceAcquiredRecord extends RecordBase {
@@ -37,10 +38,10 @@ public class ResourceAcquiredRecord extends RecordBase {
 
         debugInfo.put("URL", resourceURL.toString());
 
-        URI resourceURI = URLSerializer.computeResourceURI(resourceURL);
+        URI resourceURI = LocationUtil.computeResourceURI(resourceURL);
         debugInfo.put("URI", resourceURI.toString());
-        
-        Path absoluteResourcePath = URLSerializer.computeAbsolutePath(resourceURI);
+
+        Path absoluteResourcePath = LocationUtil.computeAbsolutePath(resourceURI);
         debugInfo.put("absolute_path", absoluteResourcePath.toString());
 
         return debugInfo;

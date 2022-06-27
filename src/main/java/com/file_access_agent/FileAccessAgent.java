@@ -15,6 +15,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import net.bytebuddy.description.type.TypeDescription;
 
+import com.file_access_agent.common.util.environment.DebugVar;
 import com.file_access_agent.logger.AccessLogger;
 import com.file_access_agent.transformer.ConstructorTransformer;
 import com.file_access_agent.transformer.ReadTransformer;
@@ -29,7 +30,7 @@ public class FileAccessAgent {
     // Classes whicha are instrumented for dealing with java Resources
     private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
 
-    private final static String AGENT_DEBUG_ENV_VAR_NAME = "FILE_ACCESS_AGENT_DEBUG";
+    
 
     private static boolean AGENT_DEBUG_MODE = false;
 
@@ -40,8 +41,6 @@ public class FileAccessAgent {
      * an environment variable "LoggerJarLocation".
      */
     public static void premain(String args, Instrumentation inst) throws IOException {
-
-        AGENT_DEBUG_MODE = "true".equals(System.getenv(AGENT_DEBUG_ENV_VAR_NAME));
 
         // get the loggerBin.jar file from the resources to be able to add it to the BootstrapClassloader
         Path tmpJarPath = Files.createTempFile("loggerBin_tmp", ".jar");
@@ -101,7 +100,7 @@ public class FileAccessAgent {
 
     /** AgentBuilder Template reused in all other AgentBuilder-methods. */
     private static AgentBuilder.Identified.Narrowable getAgentBuilderTemplate(Instrumentation inst, File tempFolder, ElementMatcher<? super TypeDescription> typeMatcher) {
-        if (AGENT_DEBUG_MODE) {
+        if (DebugVar.isDebugModeTrue()) {
             return new AgentBuilder.Default()
             .disableClassFormatChanges()
             .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)

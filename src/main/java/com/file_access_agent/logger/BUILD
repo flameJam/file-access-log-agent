@@ -13,6 +13,7 @@ java_library(
     #    ],
     visibility = ["//visibility:public"],
     deps = [
-        "//src/main/java/com/file_access_agent/util/json:util_json_lib",
+        "//src/main/java/com/file_access_agent/common/util/json:util_json_lib",
+        "//src/main/java/com/file_access_agent/common/util/location:util_location_lib",
     ]
 )

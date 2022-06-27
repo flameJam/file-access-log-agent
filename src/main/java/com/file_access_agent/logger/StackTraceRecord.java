@@ -3,7 +3,7 @@ package com.file_access_agent.logger;
 import java.util.List;
 import java.util.Map;
 
-import com.file_access_agent.util.json.JsonUtil;
+import com.file_access_agent.common.util.json.JsonUtil;
 
 public class StackTraceRecord extends RecordBase {
 

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import com.file_access_agent.util.json.JsonUtil;
+import com.file_access_agent.common.util.json.JsonUtil;
 
 /** 
  * Class used during in instrumentation code to log the access to different resources, files,...
