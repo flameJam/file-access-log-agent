@@ -32,8 +32,6 @@ public class FileAccessAgent {
 
     
 
-    private static boolean AGENT_DEBUG_MODE = false;
-
     /*
      * The premain method that is executed by the java agent before the main method of the instrumended application.
      * builds and installs all AgentBuilders necessary to watch for File-Accesses.
