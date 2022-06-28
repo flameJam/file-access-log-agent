@@ -47,6 +47,10 @@ Unfortunately the stacktrace logging probably has a bigger impact on the instrum
 ### Special Use Cases
 #### Tomcat
 
+**The current below descriped approach does only work for monitoring the tomcat server, not the webapp**
+- Problem: the webapp is precompiled using javac and only loaded as `<myWebAppClass>.class`. Unfortunately it is impossible to use the `-javaagnet:...` argument on javac (as far as I know)
+- Open Question: How to instrument the webapp?
+
 add the argument `-javaagent:path/to/agent.jar` to the environment variable `CATALINA_OPTS`:
 
 - either use `export CATALINA_OPTS="$CATALINA_OPTS -javaagent:path/to/agent.jar"`
