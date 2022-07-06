@@ -59,11 +59,16 @@ public class LocationUtil {
      */
     public static Path getPathRelativeToRepo(Path resourcePath) {
         String repoPathString = RepositoryVar.getRepositoryPath();
+        
         if (resourcePath == null || "".equals(repoPathString)) {
             return null;
         }
 
+        try {
         return Path.of(repoPathString).relativize(resourcePath);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     /** Compute absolute Path from URI */

@@ -28,7 +28,12 @@ public class FileSerializer implements JsonSerializer<File> {
         JsonObject fileObject = new JsonObject();
 
         fileObject.addProperty("name", src.getName());
-        fileObject.addProperty("path", getRelativePath(src).toString());
+        Path relativePath = getRelativePath(src);
+        if (relativePath == null) {
+            fileObject.add("path", gson.toJsonTree(null));    
+        } else {
+            fileObject.addProperty("path", getRelativePath(src).toString());
+        }
 
         return fileObject;
     }
