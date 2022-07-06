@@ -45,9 +45,10 @@ public class ResourceAcquiredRecord extends RecordBase {
             debugInfo.put("URI", null);
         }
         
-        Path absoluteResourcePath = LocationUtil.computeAbsolutePath(resourceURI);
-        if (absoluteResourcePath != null) {
-            debugInfo.put("absolute_path", absoluteResourcePath.toString());
+        Path resourcePath = LocationUtil.computePath(resourceURI);
+        resourcePath = LocationUtil.getPathRelativeToRepo(resourcePath);
+        if (resourcePath != null) {
+            debugInfo.put("absolute_path", resourcePath.toString());
         } else {
             debugInfo.put("absolute_path", null);
         }

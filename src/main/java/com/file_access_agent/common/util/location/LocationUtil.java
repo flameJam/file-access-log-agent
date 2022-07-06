@@ -7,6 +7,8 @@ import java.net.URL;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Path;
 
+import com.file_access_agent.common.util.environment.RepositoryVar;
+
 public class LocationUtil {
 
     /** Compute URI from URL */
@@ -26,8 +28,7 @@ public class LocationUtil {
     }
 
 
-    /** Compute absolute Path from URI */
-    public static Path computeAbsolutePath(URI resourceURI) {
+    public static Path computePath(URI resourceURI) {
         if (resourceURI == null) {
             return null;
         }
@@ -48,8 +49,30 @@ public class LocationUtil {
             return null;
         }
 
-        // get the absolute path
-        errorMessageTemplate = "Path %s could not be resolved to an absolute path - %s\n";
+        return resourcePath;
+    }
+
+    /**
+     * Compute Path relative to the repository location
+     * Assumes that the RepositoryVar is set
+     * returns null if not!
+     */
+    public static Path getPathRelativeToRepo(Path resourcePath) {
+        String repoPathString = RepositoryVar.getRepositoryPath();
+        if (resourcePath == null || "".equals(repoPathString)) {
+            return null;
+        }
+
+        return Path.of(repoPathString).relativize(resourcePath);
+    }
+
+    /** Compute absolute Path from URI */
+    public static Path computeAbsolutePath(Path resourcePath) {
+        if (resourcePath == null) {
+            return null;
+        }
+
+        String errorMessageTemplate = "Path %s could not be resolved to an absolute path - %s\n";
         try {
             resourcePath = resourcePath.toAbsolutePath();
         } catch (SecurityException securityException) {

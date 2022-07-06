@@ -2,7 +2,9 @@ package com.file_access_agent.common.util.json;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 
+import com.file_access_agent.common.util.location.LocationUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,9 +28,14 @@ public class FileSerializer implements JsonSerializer<File> {
         JsonObject fileObject = new JsonObject();
 
         fileObject.addProperty("name", src.getName());
-        fileObject.addProperty("path", src.getAbsolutePath());
+        fileObject.addProperty("path", getRelativePath(src).toString());
 
         return fileObject;
+    }
+
+    private Path getRelativePath(File file) {
+        Path filePath = file.toPath();
+        return LocationUtil.getPathRelativeToRepo(filePath);
     }
     
 }

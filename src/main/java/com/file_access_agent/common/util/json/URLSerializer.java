@@ -43,7 +43,8 @@ public class URLSerializer implements JsonSerializer<URL> {
             gson.toJsonTree(resourceURI)
         );
 
-        Path resourcePath = LocationUtil.computeAbsolutePath(resourceURI);
+        Path resourcePath = LocationUtil.computePath(resourceURI);
+        resourcePath = LocationUtil.getPathRelativeToRepo(resourcePath);
         if (resourcePath == null) {
             recordJsonObject.add(
             "absolutePath",
