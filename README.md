@@ -22,6 +22,11 @@ The resulting jars will be
 - Java 8+
 
 ## Usage
+
+Before executing the target program you have to configure the environment variable containing the repository directory of the target program - paths of files accessed during the execution will be outputed relative to it.
+
+`export FILE_ACCESS_AGENT_REPOSITORY=/path/to/your/repo`
+
 Suppose you want to use the agent on your simple HelloWorld-Program:
 
 `java -javaagent:your/path/to/FileAccessAgent_deploy.jar yourHelloWorld.java`
