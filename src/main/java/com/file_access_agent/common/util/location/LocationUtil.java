@@ -1,6 +1,9 @@
 package com.file_access_agent.common.util.location;
 
 import java.io.IOError;
+import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,6 +20,27 @@ public class LocationUtil {
             return null;
         }
         URI resourceURI= null;
+
+        String errorMessageTemplate = "Jar URL %s could not be resolved to the Jar files URI - %s";
+        if ("jar".equals(resourceURL.getProtocol())) {
+            try {
+                resourceURI = ((JarURLConnection) resourceURL.openConnection()).getJarFileURL().toURI();
+
+            } catch (MalformedURLException malformedURLException) {
+                locationComputationErrorMessage(String.format(errorMessageTemplate, resourceURL), malformedURLException);
+            } catch (URISyntaxException uriSyntaxException) {
+                locationComputationErrorMessage(String.format(errorMessageTemplate, resourceURL), uriSyntaxException);
+            } catch (IOException ioException) {
+                locationComputationErrorMessage(String.format(errorMessageTemplate, resourceURL), ioException);
+            }
+
+            if (resourceURI != null) {
+                return resourceURI;
+            }
+        }
+
+
+        
         try {
             resourceURI = resourceURL.toURI();
         } catch (URISyntaxException uriSyntaxExc) {
