@@ -59,3 +59,18 @@ add the argument `-javaagent:path/to/agent.jar` to the environment variable `CAT
   - you might have to create the script first and set it executable
   - for windows the file obviously has to be named `setenv.bat`
 - using the environment variable `JAVA_OPTS` should work, too
+
+#### Maven
+Define the usual environment variables. Then define the Surefire plugin in your POM and pass the JVM arg via Surefire's configuration.
+For example:
+
+```
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>[your version]</version>
+    <configuration>
+        <argLine>-javaagent:/path/to/FileAccessAgent_deploy.jar</argLine>
+    </configuration>
+</plugin>
+```
