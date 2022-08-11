@@ -7,8 +7,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -145,8 +147,11 @@ public class AccessLogger {
     /** compute the output file path from the file_access_agent.properties */
     private static String getOutputFilePath(long testTimestamp) {
 
+        Date dateCorrespondingTestTimestamp = new Date(testTimestamp);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd_HH-mm-ss");
+
         if (OutputFileVar.isDefined()) {
-            return OutputFileVar.getOutputPath() + "/" + OutputFileVar.getPrefix() + testTimestamp + ".json";
+            return OutputFileVar.getOutputPath() + "/" + OutputFileVar.getPrefix() + formatter.format(dateCorrespondingTestTimestamp) + ".json";
         }
 
         Properties agentProps = new Properties();
