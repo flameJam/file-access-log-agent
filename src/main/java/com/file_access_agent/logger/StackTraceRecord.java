@@ -23,7 +23,7 @@ public class StackTraceRecord extends RecordBase {
         List<String> stackTraceMap = accessLogger.getRecordDebugInfos();
         stackTraceMap.add(getRecordDebugInfo(accessLogger));
 
-        AccessLogger.updateLogger(null, null, null, null, stackTraceMap);
+        AccessLogger.updateLogger(null, null, null, null, stackTraceMap, null);
     }
 
     private class DebugEntry {

@@ -27,7 +27,7 @@ public class ResourceAcquiredRecord extends RecordBase {
     public void updateLists(AccessLogger accessLogger) {
         Set<URL> accessedResources = accessLogger.getAccessedResources();
         accessedResources.add(this.resourceURL);
-        AccessLogger.updateLogger(null, null, accessedResources, null, null);
+        AccessLogger.updateLogger(null, null, accessedResources, null, null, null);
     }
 
     @Override

@@ -25,7 +25,7 @@ public class FileInputStreamCreatedFileRecord extends FileInputStreamCreatedReco
         accessedFiles.add(this.file);
         Map<FileInputStream, File> fileInputStreamMap = accessLogger.getFileInputStreamMap();
         fileInputStreamMap.put(this.fileInputStream, this.file);
-        AccessLogger.updateLogger(null, accessedFiles, null, fileInputStreamMap, null);
+        AccessLogger.updateLogger(null, accessedFiles, null, fileInputStreamMap, null, null);
     }
 
     @Override

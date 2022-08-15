@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.jar.JarFile;
 
+import javax.imageio.stream.FileImageInputStream;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -18,6 +19,7 @@ import net.bytebuddy.description.type.TypeDescription;
 import com.file_access_agent.common.util.environment.DebugVar;
 import com.file_access_agent.logger.AccessLogger;
 import com.file_access_agent.transformer.ConstructorTransformer;
+import com.file_access_agent.transformer.ImageIOTransformer;
 import com.file_access_agent.transformer.ReadTransformer;
 import com.file_access_agent.transformer.ResourceTransformer;
 
@@ -25,7 +27,7 @@ import com.file_access_agent.transformer.ResourceTransformer;
 public class FileAccessAgent {
     
     // Classes which are instrumented for dealing with java Files and FileInputStreams
-    private final static String CLASSNAMES_TO_WATCH_FILE[] = {File.class.getName(), FileInputStream.class.getName()};
+    private final static String CLASSNAMES_TO_WATCH_FILE[] = {File.class.getName(), FileInputStream.class.getName(), FileImageInputStream.class.getName()};
 
     // Classes whicha are instrumented for dealing with java Resources
     private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
@@ -64,6 +66,7 @@ public class FileAccessAgent {
 
         getResourceAgentBuilder(inst, tempFolder).installOn(inst);
 
+        getImageInputStreamConstructorAgentBuilder(inst, tempFolder).installOn(inst);
 
         addShutdownHookForOutputComputation();
     }
@@ -89,6 +92,12 @@ public class FileAccessAgent {
         Junction<TypeDescription> typeMatcher = ElementMatchers.namedOneOf(CLASSNAMES_TO_WATCH_FILE);
         return getAgentBuilderTemplate(inst, tempFolder,typeMatcher).transform(new ReadTransformer());
     }
+
+    private static AgentBuilder getImageInputStreamConstructorAgentBuilder(Instrumentation inst, File tempFolder) {
+        Junction<TypeDescription> typeMatcher = ElementMatchers.named(javax.imageio.ImageIO.class.getName());
+        return getAgentBuilderTemplate(inst, tempFolder, typeMatcher).transform(new ImageIOTransformer());
+    }
+
 
     /** AgentBuilder for instrumenting the Resource classes to log Resource retrieval. */
     private static AgentBuilder getResourceAgentBuilder(Instrumentation inst, File tempFolder) {
