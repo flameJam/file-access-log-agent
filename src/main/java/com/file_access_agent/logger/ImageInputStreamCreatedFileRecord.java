@@ -1,12 +1,15 @@
 package com.file_access_agent.logger;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.stream.ImageInputStream;
 
+// this does not extend InputStreamCreated because ImageInputStream is an interface and not a subtype of InputStream
 public class ImageInputStreamCreatedFileRecord extends RecordBase {
 
     private ImageInputStream imageInputStream;
@@ -27,9 +30,9 @@ public class ImageInputStreamCreatedFileRecord extends RecordBase {
     public void updateLists(AccessLogger accessLogger) {
         Set<File> accessedFiles= accessLogger.getAccessedFiles();
         accessedFiles.add(this.file);
-        Map<ImageInputStream, File> imageInputStreamMap = accessLogger.getImageInputStreamMap();
+        Map<Closeable, File> imageInputStreamMap = accessLogger.getInputStreamsToFilesMaps().get(ImageInputStream.class.getName());
         imageInputStreamMap.put(this.imageInputStream, this.file);
-        AccessLogger.updateLogger(null, accessedFiles, null, null, null, imageInputStreamMap);
+        AccessLogger.updateLogger(null, accessedFiles, null, Map.of(ImageInputStream.class.getName(), imageInputStreamMap), null);
     }
 
     @Override

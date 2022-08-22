@@ -14,11 +14,13 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
+import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.type.TypeDescription;
 
 import com.file_access_agent.common.util.environment.DebugVar;
 import com.file_access_agent.logger.AccessLogger;
 import com.file_access_agent.transformer.ConstructorTransformer;
+import com.file_access_agent.transformer.FilesTransformer;
 import com.file_access_agent.transformer.ImageIOTransformer;
 import com.file_access_agent.transformer.ReadTransformer;
 import com.file_access_agent.transformer.ResourceTransformer;
@@ -27,7 +29,7 @@ import com.file_access_agent.transformer.ResourceTransformer;
 public class FileAccessAgent {
     
     // Classes which are instrumented for dealing with java Files and FileInputStreams
-    private final static String CLASSNAMES_TO_WATCH_FILE[] = {File.class.getName(), FileInputStream.class.getName(), FileImageInputStream.class.getName()};
+    private final static String CLASSNAMES_TO_WATCH_FILE[] = {File.class.getName(), FileInputStream.class.getName()};
 
     // Classes whicha are instrumented for dealing with java Resources
     private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
@@ -68,6 +70,8 @@ public class FileAccessAgent {
 
         getImageInputStreamConstructorAgentBuilder(inst, tempFolder).installOn(inst);
 
+        getFilesAgentBuilder(inst, tempFolder).installOn(inst);
+
         addShutdownHookForOutputComputation();
     }
 
@@ -79,6 +83,11 @@ public class FileAccessAgent {
                 AccessLogger.provideOutput();
             }
         });
+    }
+
+    private static AgentBuilder getFilesAgentBuilder(Instrumentation inst, File tempFolder) {
+        Junction<NamedElement> typeMatcher = ElementMatchers.named(Files.class.getName());
+        return getAgentBuilderTemplate(inst, tempFolder, typeMatcher).transform(new FilesTransformer());
     }
 
     /** AgentBuilder for instrumenting the Constructors of File-concerned classes. */

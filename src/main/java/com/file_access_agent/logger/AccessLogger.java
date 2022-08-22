@@ -1,12 +1,15 @@
 package com.file_access_agent.logger;
 
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.imageio.stream.ImageInputStream;
 
@@ -42,24 +46,18 @@ public class AccessLogger {
 
     /** the list of access resources -> URLs */
     private Set<URL> accessedResources;
+    
+    /** a map mapping different types of inputStreams to a map mapping distinct instances of those streams to the files they open & read */
+    private Map<String, Map<Closeable, File>> inputStreamsToFilesMaps;
 
-    /** a list to map FileInputStreams to Files to log when a file was read (currently unused) */
-    private Map<FileInputStream, File> fileInputStreamMap;
-
-    private Map<ImageInputStream, File> imageInputStreamMap;
-
-    public Map<ImageInputStream, File> getImageInputStreamMap() {
-        return imageInputStreamMap;
+    public Map<String, Map<Closeable, File>> getInputStreamsToFilesMaps() {
+        return inputStreamsToFilesMaps;
     }
 
     private List<String> recordDebugInfos;
 
     public List<String> getRecordDebugInfos() {
         return recordDebugInfos;
-    }
-
-    public Map<FileInputStream, File> getFileInputStreamMap() {
-        return fileInputStreamMap;
     }
 
     public Map<Integer, RecordBase> getRecords() {
@@ -76,26 +74,31 @@ public class AccessLogger {
  
     /** empty constructor */
     private AccessLogger() {
+
         records = new HashMap<>();
         accessedFiles = new HashSet<>();
         accessedResources = new HashSet<>();
-        fileInputStreamMap = new HashMap<>();
+
+        inputStreamsToFilesMaps = new HashMap<>();
+        inputStreamsToFilesMaps.put(FileInputStream.class.getName(), new HashMap<>());
+        inputStreamsToFilesMaps.put(ImageInputStream.class.getName(), new HashMap<>());
+        inputStreamsToFilesMaps.put(InputStream.class.getName(), new HashMap<>());
+
         recordDebugInfos = new ArrayList<>();
-        imageInputStreamMap = new HashMap<>();
     }
 
     private AccessLogger(AccessLogger oldVersion) {
         records = oldVersion.getRecords();
         accessedFiles = oldVersion.getAccessedFiles();
         accessedResources = oldVersion.getAccessedResources();
-        fileInputStreamMap = oldVersion.getFileInputStreamMap();
+        inputStreamsToFilesMaps = oldVersion.getInputStreamsToFilesMaps();
         recordDebugInfos = oldVersion.getRecordDebugInfos();
-        imageInputStreamMap = oldVersion.getImageInputStreamMap();
     }
 
     /** Constructor to replace the old AccessLogger with a new one, only knowing which attributes have to be replaced at runtime. */
     private AccessLogger(AccessLogger oldVersion, Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
-    Map<FileInputStream, File> fileInputStreamMap, List<String> recordDebugInfos, Map<ImageInputStream, File> imageInputStreamMap) {
+    Map<String, Map<Closeable, File>> newInputStreamsToFilesMaps,
+    List<String> recordDebugInfos) {
         this(oldVersion);
         if (records != null) {
             this.records = records;
@@ -106,20 +109,19 @@ public class AccessLogger {
         if (accessedResources != null) {
             this.accessedResources = accessedResources;
         }
-        if (fileInputStreamMap != null) {
-            this.fileInputStreamMap = fileInputStreamMap;
+        if(newInputStreamsToFilesMaps != null) {
+            for (Entry<String, Map<Closeable, File>> entry: newInputStreamsToFilesMaps.entrySet()) {
+                this.inputStreamsToFilesMaps.put(entry.getKey(), entry.getValue());
+            }
         }
         if (recordDebugInfos != null) {
             this.recordDebugInfos = recordDebugInfos;
         }
-        if (imageInputStreamMap != null) {
-            this.imageInputStreamMap = imageInputStreamMap;
-        }
     }
 
     public static void updateLogger(Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
-    Map<FileInputStream, File> fileInputStreamMap, List<String> recordDebugInfos, Map<ImageInputStream, File> imageInputStreamMap) {
-        ACCESS_LOGGER = new AccessLogger(getLogger(), records , accessedFiles, accessedResources, fileInputStreamMap, recordDebugInfos, imageInputStreamMap);
+    Map<String, Map<Closeable, File>> newInputStreamsToFilesMaps, List<String> recordDebugInfos) {
+        ACCESS_LOGGER = new AccessLogger(getLogger(), records , accessedFiles, accessedResources,newInputStreamsToFilesMaps, recordDebugInfos);
     }
 
     /** log that a FileInputStream was created with the file that provides its input */
@@ -145,6 +147,12 @@ public class AccessLogger {
     /** log an acquired resource */
     public static int logResourceAcquired(URL resourceURL) {
         ResourceAcquiredRecord record = new ResourceAcquiredRecord(resourceURL);
+        getLogger().appendRecord(record);
+        return record.recordId;
+    }
+
+    public static int logInputStreamCreatedWithPath(InputStream inputStream, Path path) {
+        InputStreamCreatedRecord record = new InputStreamCreatedRecord(inputStream, path.toFile());
         getLogger().appendRecord(record);
         return record.recordId;
     }

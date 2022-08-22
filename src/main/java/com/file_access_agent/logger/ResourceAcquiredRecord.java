@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.file_access_agent.common.util.json.URLSerializer;
 import com.file_access_agent.common.util.location.LocationUtil;
 
 /** Record storing a acquired resource -> URL */
@@ -27,7 +26,7 @@ public class ResourceAcquiredRecord extends RecordBase {
     public void updateLists(AccessLogger accessLogger) {
         Set<URL> accessedResources = accessLogger.getAccessedResources();
         accessedResources.add(this.resourceURL);
-        AccessLogger.updateLogger(null, null, accessedResources, null, null, null);
+        AccessLogger.updateLogger(null, null, accessedResources, null, null);
     }
 
     @Override

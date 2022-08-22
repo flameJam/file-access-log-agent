@@ -10,7 +10,6 @@ import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 
-import com.file_access_agent.advice.FileImageInputStreamConstructorLogAdvice;
 import com.file_access_agent.advice.FileInputStreamConstructorLogAdvice;
 
 /** Transformer implementing the transformation of the FileInputStream-Constructors */
@@ -30,9 +29,9 @@ public class ConstructorTransformer implements AgentBuilder.Transformer {
             return getBuilderForFileInputStream(builder);
         }
 
-        if ("javax.imageio.stream.FileImageInputStream".equals(typeDescription.getActualName())) {
+        /*if ("javax.imageio.stream.FileImageInputStream".equals(typeDescription.getActualName())) {
             return getBuilderForFileImageInputStream(builder);
-        }
+        }*/
 
         return builder;
 
@@ -57,6 +56,7 @@ public class ConstructorTransformer implements AgentBuilder.Transformer {
         );
     }
 
+    /*
     private Builder<?> getBuilderForFileImageInputStream(Builder<?> builder) {
         return builder
         .visit(
@@ -65,6 +65,6 @@ public class ConstructorTransformer implements AgentBuilder.Transformer {
                 (ElementMatchers.isConstructor().and(ElementMatchers.takesArgument(0, File.class)
                 )))
             );
-    }
+    } */
     
 }

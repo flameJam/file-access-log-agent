@@ -23,7 +23,7 @@ public class StackTraceRecord extends RecordBase {
         List<String> stackTraceMap = accessLogger.getRecordDebugInfos();
         stackTraceMap.add(getRecordDebugInfo(accessLogger));
 
-        AccessLogger.updateLogger(null, null, null, null, stackTraceMap, null);
+        AccessLogger.updateLogger(null, null, null, null, stackTraceMap);
     }
 
     private class DebugEntry {
@@ -56,7 +56,6 @@ public class StackTraceRecord extends RecordBase {
 
     @Override
     public Map<String, String> getDebugInfo() {
-        // TODO Auto-generated method stub
         return null;
     }
     
