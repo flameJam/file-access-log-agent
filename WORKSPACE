@@ -23,7 +23,7 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
     artifacts = [
-        "net.bytebuddy:byte-buddy:1.12.10",
+        "net.bytebuddy:byte-buddy:1.12.14",
         "com.google.code.gson:gson:2.9.0",
     ],
     repositories = [

@@ -2,10 +2,12 @@ package com.file_access_agent.transformer;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.security.ProtectionDomain;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
@@ -17,7 +19,7 @@ public class ConstructorTransformer implements AgentBuilder.Transformer {
 
     @Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
-            JavaModule module) {
+            JavaModule module, ProtectionDomain protectionDomain) {
 
         /* //might reintroduce the transformation of the File-Constructor later, when implementing read-logging
         if("java.io.File".equals(typeDescription.getActualName())) {

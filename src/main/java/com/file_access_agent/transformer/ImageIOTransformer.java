@@ -1,6 +1,7 @@
 package com.file_access_agent.transformer;
 
 import java.net.URL;
+import java.security.ProtectionDomain;
 
 import com.file_access_agent.advice.ImageInputStreamCreatedFileLogAdvice;
 import com.file_access_agent.advice.ImageIOLogReadURLAdvice;
@@ -16,7 +17,7 @@ public class ImageIOTransformer implements AgentBuilder.Transformer {
 
     @Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
-            JavaModule module) {
+            JavaModule module, ProtectionDomain protectionDomain) {
         
         return builder
         .visit(Advice.to(ImageInputStreamCreatedFileLogAdvice.class)

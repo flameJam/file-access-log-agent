@@ -1,6 +1,7 @@
 package com.file_access_agent.transformer;
 
 import java.nio.file.Path;
+import java.security.ProtectionDomain;
 
 import com.file_access_agent.advice.FilesNewInputStreamAdvice;
 
@@ -15,7 +16,7 @@ public class FilesTransformer implements AgentBuilder.Transformer {
 
     @Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
-            JavaModule module) {
+            JavaModule module, ProtectionDomain protectionDomain) {
         return builder
         .visit(Advice.to(FilesNewInputStreamAdvice.class)
         .on(

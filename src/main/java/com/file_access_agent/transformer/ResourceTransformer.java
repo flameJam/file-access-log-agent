@@ -1,5 +1,7 @@
 package com.file_access_agent.transformer;
 
+import java.security.ProtectionDomain;
+
 import com.file_access_agent.advice.ClassGetResourceAdvice;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -14,7 +16,7 @@ public class ResourceTransformer implements AgentBuilder.Transformer {
 
     @Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
-            JavaModule module) {
+            JavaModule module, ProtectionDomain protectionDomain) {
         
         return getResourceMaybeAsStreamBuilder(builder);
     }
