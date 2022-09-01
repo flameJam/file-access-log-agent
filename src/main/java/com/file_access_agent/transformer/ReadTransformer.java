@@ -2,7 +2,7 @@ package com.file_access_agent.transformer;
 
 import java.security.ProtectionDomain;
 
-import com.file_access_agent.advice.FileInputStreamReadLogAdvice;
+import com.file_access_agent.advice.InputStreamReadLogAdvice;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
@@ -16,12 +16,12 @@ public class ReadTransformer implements AgentBuilder.Transformer{
     @Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
             JavaModule module, ProtectionDomain protectionDomain) {
-        return getBuilderForFileInputStream(builder);
+        return getBuilderInputStream(builder);
     }
 
-    private Builder<?> getBuilderForFileInputStream(Builder<?> builder) {
+    private Builder<?> getBuilderInputStream(Builder<?> builder) {
         return builder
-        .visit(Advice.to(FileInputStreamReadLogAdvice.class)
+        .visit(Advice.to(InputStreamReadLogAdvice.class)
         .on(ElementMatchers.named("read").or(ElementMatchers.named("readBytes"))));
     }
     

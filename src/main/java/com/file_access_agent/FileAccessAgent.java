@@ -3,6 +3,7 @@ package com.file_access_agent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,7 @@ import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.type.TypeDescription;
 
 import com.file_access_agent.common.util.environment.DebugVar;
+import com.file_access_agent.common.util.environment.RealReadVar;
 import com.file_access_agent.logger.AccessLogger;
 import com.file_access_agent.transformer.ConstructorTransformer;
 import com.file_access_agent.transformer.FilesTransformer;
@@ -64,7 +66,10 @@ public class FileAccessAgent {
 
         getConstructorAgentBuilder(inst, tempFolder).installOn(inst);
 
-        getReadAgentBuilder(inst, tempFolder).installOn(inst);
+        if (RealReadVar.isDefined() && RealReadVar.isInRealReadMode()) {
+            getReadAgentBuilder(inst, tempFolder).installOn(inst);
+        }
+        
 
         getResourceAgentBuilder(inst, tempFolder).installOn(inst);
 
@@ -98,7 +103,7 @@ public class FileAccessAgent {
 
     /** AgentBuilder for instrumenting the read methods of the FileInputStream to log them. */
     private static AgentBuilder getReadAgentBuilder(Instrumentation inst, File tempFolder) {
-        Junction<TypeDescription> typeMatcher = ElementMatchers.namedOneOf(CLASSNAMES_TO_WATCH_FILE);
+        Junction<TypeDescription> typeMatcher = ElementMatchers.isSubTypeOf(InputStream.class);
         return getAgentBuilderTemplate(inst, tempFolder,typeMatcher).transform(new ReadTransformer());
     }
 

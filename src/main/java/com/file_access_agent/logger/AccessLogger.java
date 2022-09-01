@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import javax.imageio.stream.ImageInputStream;
 
 import com.file_access_agent.common.util.environment.OutputFileVar;
+import com.file_access_agent.common.util.environment.RealReadVar;
 import com.file_access_agent.common.util.json.JsonUtil;
 
 /** 
@@ -38,11 +39,18 @@ public class AccessLogger {
     /** the used AccessLogger Instance, used to implement a Singleton */
     private static AccessLogger ACCESS_LOGGER;
 
+    public Set<File> getReadFiles() {
+        return readFiles;
+    }
+
     /** the List of Records recorded/logged during testing*/
     private Map<Integer, RecordBase> records;
 
-    /** the list of accessed files */
+    /** the set of accessed files */
     private Set<File> accessedFiles;
+
+    /** the set of read files */
+    private Set<File> readFiles;
 
     /** the list of access resources -> URLs */
     private Set<URL> accessedResources;
@@ -78,6 +86,7 @@ public class AccessLogger {
         records = new HashMap<>();
         accessedFiles = new HashSet<>();
         accessedResources = new HashSet<>();
+        readFiles = new HashSet<>();
 
         inputStreamsToFilesMaps = new HashMap<>();
         inputStreamsToFilesMaps.put(FileInputStream.class.getName(), new HashMap<>());
@@ -93,12 +102,13 @@ public class AccessLogger {
         accessedResources = oldVersion.getAccessedResources();
         inputStreamsToFilesMaps = oldVersion.getInputStreamsToFilesMaps();
         recordDebugInfos = oldVersion.getRecordDebugInfos();
+        readFiles = oldVersion.getReadFiles();
     }
 
     /** Constructor to replace the old AccessLogger with a new one, only knowing which attributes have to be replaced at runtime. */
     private AccessLogger(AccessLogger oldVersion, Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
     Map<String, Map<Closeable, File>> newInputStreamsToFilesMaps,
-    List<String> recordDebugInfos) {
+    List<String> recordDebugInfos, Set<File> readFiles) {
         this(oldVersion);
         if (records != null) {
             this.records = records;
@@ -117,6 +127,22 @@ public class AccessLogger {
         if (recordDebugInfos != null) {
             this.recordDebugInfos = recordDebugInfos;
         }
+        if(readFiles != null) {
+            this.readFiles = readFiles;
+        }
+    }
+
+
+    /** Constructor to replace the old AccessLogger with a new one, only knowing which attributes have to be replaced at runtime. */
+    private AccessLogger(AccessLogger oldVersion, Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
+    Map<String, Map<Closeable, File>> newInputStreamsToFilesMaps,
+    List<String> recordDebugInfos) {
+        this(oldVersion, records, accessedFiles, accessedResources, newInputStreamsToFilesMaps, recordDebugInfos, null);
+    }
+
+    public static void updateLogger(Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
+    Map<String, Map<Closeable, File>> newInputStreamsToFilesMaps, List<String> recordDebugInfos, Set<File> readFiles) {
+        ACCESS_LOGGER = new AccessLogger(getLogger(), records , accessedFiles, accessedResources,newInputStreamsToFilesMaps, recordDebugInfos, readFiles);
     }
 
     public static void updateLogger(Map<Integer, RecordBase> records , Set<File> accessedFiles, Set<URL> accessedResources,
@@ -208,8 +234,14 @@ public class AccessLogger {
         }
 
         BufferedWriter writer = new BufferedWriter(fileWriter);
+        Set<File> filesToLogAccessed;
+        if (RealReadVar.isDefined() && RealReadVar.isInRealReadMode()) {
+            filesToLogAccessed = getReadFiles();
+        } else {
+            filesToLogAccessed = getAccessedFiles();
+        }
 
-        String content = JsonUtil.getOutputJsonString(getAccessedFiles(), getAccessedResources(), getRecordDebugInfos(), testTimestamp);
+        String content = JsonUtil.getOutputJsonString(filesToLogAccessed, getAccessedResources(), getRecordDebugInfos(), testTimestamp);
         
         try {
             writer.write(content);

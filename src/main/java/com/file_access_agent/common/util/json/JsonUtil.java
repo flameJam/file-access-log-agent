@@ -1,6 +1,7 @@
 package com.file_access_agent.common.util.json;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -33,6 +34,7 @@ public class JsonUtil {
             .registerTypeAdapter(URI.class, new URISerializer())
             .registerTypeAdapter(Path.class, new PathSerializer())
             .registerTypeAdapter(File.class, new FileSerializer())
+            .registerTypeAdapter(InputStream.class, new InputStreamSerializer())
             .registerTypeAdapter(Map.class, new MapSerializer<String, String>());
     }
 

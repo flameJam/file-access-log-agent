@@ -8,15 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class InputStreamCreatedRecord extends RecordBase {
+public class InputStreamCreatedRecord extends InputStreamRecordBase {
 
-    protected InputStream inputStream;
     protected File file;
     protected FileDescriptor fileDescriptor;
-
-    public InputStream getInputStream() {
-        return inputStream;
-    }
 
     public FileDescriptor getFileDescriptor() {
         return fileDescriptor;
@@ -27,8 +22,7 @@ public class InputStreamCreatedRecord extends RecordBase {
     }
 
     private InputStreamCreatedRecord(InputStream inputStream) {
-        super();
-        this.inputStream = inputStream;
+        super(inputStream);
     }
 
     public InputStreamCreatedRecord(InputStream inputStream, File file) {

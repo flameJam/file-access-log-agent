@@ -2,7 +2,6 @@ package com.file_access_agent.logger;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
