@@ -74,3 +74,13 @@ For example:
     </configuration>
 </plugin>
 ```
+
+#### Gradle
+Define the usual environment variables. Then find the `test` task in your or one of your `build.gradle` files and set the `test.jvmArgs` with the usual `-javaagent:...` argument.
+
+Example:
+```gradle
+test {
+    test.jvmArgs '-javaagent:/path/to/your/agent'
+}
+```
