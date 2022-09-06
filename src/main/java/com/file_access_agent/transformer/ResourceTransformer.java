@@ -14,9 +14,16 @@ import net.bytebuddy.utility.JavaModule;
 /** Transformer implementing the transformation of the getResource()-methods. */
 public class ResourceTransformer implements AgentBuilder.Transformer {
 
-    @Override
+    //@Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
             JavaModule module, ProtectionDomain protectionDomain) {
+        
+        return getResourceMaybeAsStreamBuilder(builder);
+    }
+
+    @Override
+    public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
+            JavaModule module) {
         
         return getResourceMaybeAsStreamBuilder(builder);
     }

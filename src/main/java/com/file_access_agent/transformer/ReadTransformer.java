@@ -13,9 +13,15 @@ import net.bytebuddy.utility.JavaModule;
 /** Transformer implementing the transformation of the FileInputStream.read(...) methods */
 public class ReadTransformer implements AgentBuilder.Transformer{
 
-    @Override
+    //@Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
             JavaModule module, ProtectionDomain protectionDomain) {
+        return getBuilderInputStream(builder);
+    }
+
+    @Override
+    public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
+            JavaModule module) {
         return getBuilderInputStream(builder);
     }
 

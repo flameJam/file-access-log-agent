@@ -15,9 +15,22 @@ import net.bytebuddy.utility.JavaModule;
 
 public class ImageIOTransformer implements AgentBuilder.Transformer {
 
-    @Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
             JavaModule module, ProtectionDomain protectionDomain) {
+        
+        return builder
+        .visit(Advice.to(ImageInputStreamCreatedFileLogAdvice.class)
+        .on(
+            ElementMatchers.isMethod().and(ElementMatchers.named("createImageInputStream"))
+        )).visit(Advice.to(ImageIOLogReadURLAdvice.class).on(
+            ElementMatchers.isMethod()
+            .and(ElementMatchers.named("read")
+            .and(ElementMatchers.takesArgument(0, URL.class)))));
+    }
+
+    @Override
+    public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
+            JavaModule module) {
         
         return builder
         .visit(Advice.to(ImageInputStreamCreatedFileLogAdvice.class)

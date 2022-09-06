@@ -14,9 +14,23 @@ import net.bytebuddy.utility.JavaModule;
 
 public class FilesTransformer implements AgentBuilder.Transformer {
 
-    @Override
+    //@Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
             JavaModule module, ProtectionDomain protectionDomain) {
+        return builder
+        .visit(Advice.to(FilesNewInputStreamAdvice.class)
+        .on(
+            ElementMatchers.named("newInputStream")
+            .and(
+                ElementMatchers.takesArgument(0, Path.class)
+                )
+            )
+        );
+    }
+
+    @Override
+    public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
+            JavaModule module) {
         return builder
         .visit(Advice.to(FilesNewInputStreamAdvice.class)
         .on(
