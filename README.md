@@ -17,6 +17,10 @@ to build the jar-file of the agent.
 The resulting jars will be
 - `bazel-bin/FileAccessAgent_deploy.jar`
 
+### Building for different branches
+If you intend to use different versions of the agent, for example the version on branch `main` and the version (currently in development) on branch `real_read_dev`, using the build-script `buildAgentForBranch.sh` might be nice. It does the usual building process, but then puts the output into a separate directory called `binaries/<your_currrent_git_branch_name>`.
+Added this to prevent me from trying to execute large sets of tests with the agent while accidentally using a broken agent, because I previously spent time on a development branch and built a different agent-jar for debugging purposes...
+
 ### Requirements
 - [bazel](https://bazel.build/) 5.1.1
 - Java 8+
