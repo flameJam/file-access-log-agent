@@ -9,8 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.jar.JarFile;
+import java.util.zip.InflaterInputStream;
 
-import javax.imageio.stream.FileImageInputStream;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -103,7 +103,20 @@ public class FileAccessAgent {
 
     /** AgentBuilder for instrumenting the read methods of the FileInputStream to log them. */
     private static AgentBuilder getReadAgentBuilder(Instrumentation inst, File tempFolder) {
-        Junction<TypeDescription> typeMatcher = ElementMatchers.isSubTypeOf(InputStream.class);
+        Junction<TypeDescription> typeMatcher = ElementMatchers.isSubTypeOf(InputStream.class)
+        .and(
+            ElementMatchers.not(
+                ElementMatchers.namedOneOf(InflaterInputStream.class.getName())
+                .or(ElementMatchers.isPrivate())
+                )
+            )
+        /*.and(
+            ElementMatchers.not(ElementMatchers.isSubTypeOf(InflaterInputStream.class)
+            .and(ElementMatchers.isAbstract()
+            .and(ElementMatchers.isPrivate())
+            .and(ElementMatchers.named(InflaterInputStream.class.getName())))
+        )
+        )*/;
         return getAgentBuilderTemplate(inst, tempFolder,typeMatcher).transform(new ReadTransformer());
     }
 

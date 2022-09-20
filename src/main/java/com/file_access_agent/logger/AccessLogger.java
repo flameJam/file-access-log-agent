@@ -183,6 +183,12 @@ public class AccessLogger {
         return record.recordId;
     }
 
+    public static int logInputStreamRead(InputStream inputStream) {
+        InputStreamReadRecord record = new InputStreamReadRecord(inputStream);
+        getLogger().appendRecord(record);
+        return record.recordId;
+    }
+
     /** log the stacktrace to a given recordId */
     public static int logStackTrace(int recordId, StackTraceElement[] stackTrace) {
         StackTraceRecord record = new StackTraceRecord(recordId, stackTrace);

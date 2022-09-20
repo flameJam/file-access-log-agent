@@ -22,7 +22,7 @@ public class ReadTransformer implements AgentBuilder.Transformer{
     private Builder<?> getBuilderInputStream(Builder<?> builder) {
         return builder
         .visit(Advice.to(InputStreamReadLogAdvice.class)
-        .on(ElementMatchers.named("read").or(ElementMatchers.named("readBytes"))));
+        .on(ElementMatchers.not(ElementMatchers.isStatic()).and(ElementMatchers.named("read").or(ElementMatchers.named("readBytes")))));
     }
     
 }
