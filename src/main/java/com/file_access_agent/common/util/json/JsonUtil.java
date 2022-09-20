@@ -1,7 +1,9 @@
 package com.file_access_agent.common.util.json;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -52,6 +54,17 @@ public class JsonUtil {
 
         // add a list of all accessed resources
         accessLoggerObject.add("accessed_resources", gson.toJsonTree(resources));
+        
+        String jarEntryJsonArray = "[\n";
+        for (URL url: resources) {
+            if ("jar".equals(url.getProtocol())) {
+                String jarEntryName = getJarEntryName(url);
+                if (null != jarEntryName)
+                jarEntryJsonArray += "{\"jar_entry\": \"" + jarEntryName + "\"},\n";
+            }
+        }
+        jarEntryJsonArray += "\n]\n";
+        accessLoggerObject.add("accessed_jar_entries", JsonParser.parseString(jarEntryJsonArray));
 
 
         List<JsonObject> recordDebugInfosJsonCopy = recordDebugInfos.stream()
@@ -64,6 +77,15 @@ public class JsonUtil {
         }
         
         return gson.toJson(accessLoggerObject);
+    }
+
+    private static String getJarEntryName(URL url) {
+        try {
+            JarURLConnection jarUrlConnection = (JarURLConnection) url.openConnection();
+            return jarUrlConnection.getEntryName();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 }
