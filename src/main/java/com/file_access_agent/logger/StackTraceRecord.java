@@ -2,8 +2,7 @@ package com.file_access_agent.logger;
 
 import java.util.List;
 import java.util.Map;
-
-import com.file_access_agent.common.util.json.JsonUtil;
+import java.util.Map.Entry;
 
 public class StackTraceRecord extends RecordBase {
 
@@ -36,11 +35,36 @@ public class StackTraceRecord extends RecordBase {
             this.info = info;
             this.stackTrace = stackTrace;
         }
+
+        public String getJsonString() {
+            String json = "{\n";
+            json += "\"recordId\": " + this.recordId + ",\n";
+            json += "\"info\":" + getJsonStringForMap(this.info) + ",\n";
+            json += "\"stackTrace\": \"" + this.stackTrace + "\"\n}\n";
+            return json;
+        }
+
+        private String getJsonStringForMap(Map<String, String> map) {
+            String json = "{\n";
+            
+            boolean enteredLoop = false;
+            for (Entry<String, String> entry: map.entrySet()) {
+                enteredLoop = true;
+                json += "\"" + entry.getKey() + "\": \"" + entry.getValue() + "\",\n";
+            }
+            if (enteredLoop) {
+                json = json.substring(0, json.length()-2);
+            }
+
+            json += "}";
+
+            return json;
+        }
     }
 
     private String getRecordDebugInfo(AccessLogger accessLogger) {
         DebugEntry debugEntry = new DebugEntry(relatedRecordId, accessLogger.getRecords().get(relatedRecordId).getDebugInfo(), getStackTraceString());
-        return JsonUtil.toJson(debugEntry);
+        return debugEntry.getJsonString();
     }
 
     private String getStackTraceString() {

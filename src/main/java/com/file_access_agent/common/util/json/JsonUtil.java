@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /** Class providing Util regarding json. Especially important: the method for generating an output json String for the AccessLogger */
 public class JsonUtil {
@@ -52,8 +53,7 @@ public class JsonUtil {
 
         // add a list of all accessed resources
         accessLoggerObject.add("accessed_resources", gson.toJsonTree(resources));
-
-
+            
         List<JsonObject> recordDebugInfosJsonCopy = recordDebugInfos.stream()
             .map(jsonString -> JsonParser.parseString(jsonString).getAsJsonObject()).collect(Collectors.toList());
 

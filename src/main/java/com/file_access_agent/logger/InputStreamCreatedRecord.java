@@ -8,10 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class InputStreamCreatedRecord extends InputStreamRecordBase {
+public class InputStreamCreatedRecord extends RecordBase {
 
     protected File file;
     protected FileDescriptor fileDescriptor;
+    protected InputStream inputStream;
 
     public FileDescriptor getFileDescriptor() {
         return fileDescriptor;
@@ -22,7 +23,8 @@ public class InputStreamCreatedRecord extends InputStreamRecordBase {
     }
 
     private InputStreamCreatedRecord(InputStream inputStream) {
-        super(inputStream);
+        super();
+        this.inputStream = inputStream;
     }
 
     public InputStreamCreatedRecord(InputStream inputStream, File file) {
@@ -42,10 +44,10 @@ public class InputStreamCreatedRecord extends InputStreamRecordBase {
         if (this.file != null) {
             Set<File> accessedFiles = accessLogger.getAccessedFiles();
             accessedFiles.add(this.file);
-            Map<Closeable, File> inputStreamToFileMap = accessLogger.getInputStreamsToFilesMaps().get(InputStream.class.getName());
+            Map<Closeable, File> inputStreamToFileMap = accessLogger.getInputStreamsToFilesMaps().getOrDefault(this.inputStream.getClass().getName(), new HashMap<>());
             inputStreamToFileMap.put(this.inputStream, this.file);
 
-            AccessLogger.updateLogger(null, accessedFiles, null, Map.of(InputStream.class.getName(), inputStreamToFileMap), null);
+            AccessLogger.updateLogger(null, accessedFiles, null, Map.of(this.inputStream.getClass().getName(), inputStreamToFileMap), null);
         }
     }
 

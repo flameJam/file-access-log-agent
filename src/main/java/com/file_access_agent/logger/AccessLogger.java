@@ -1,32 +1,21 @@
 package com.file_access_agent.logger;
 
-import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.imageio.stream.ImageInputStream;
-
-import com.file_access_agent.common.util.environment.OutputFileVar;
-import com.file_access_agent.common.util.environment.RealReadVar;
-import com.file_access_agent.common.util.json.JsonUtil;
 
 /** 
  * Class used during in instrumentation code to log the access to different resources, files,...
@@ -152,20 +141,14 @@ public class AccessLogger {
 
     /** log that a FileInputStream was created with the file that provides its input */
     public static int logFileInputStreamCreated(FileInputStream fileInputStream, File file) {
-        FileInputStreamCreatedFileRecord record = new FileInputStreamCreatedFileRecord(fileInputStream, file);
+        InputStreamCreatedRecord record = new InputStreamCreatedRecord(fileInputStream, file);
+        //FileInputStreamCreatedFileRecord record = new FileInputStreamCreatedFileRecord(fileInputStream, file);
         getLogger().appendRecord(record);
         return record.recordId;
     }
 
     public static int logFileImageInputStreamCreated(ImageInputStream fileImageInputStream, File file) {
         ImageInputStreamCreatedFileRecord record = new ImageInputStreamCreatedFileRecord(fileImageInputStream, file);
-        getLogger().appendRecord(record);
-        return record.recordId;
-    }
-
-    /** log that a FileInputStream was created with the FileDescriptor was used to provide its input */
-    public static int logFileInputStreamCreated(FileInputStream fileInputStream, FileDescriptor fileDescriptor) {
-        FileInputStreamCreatedFileDescriptorRecord record = new FileInputStreamCreatedFileDescriptorRecord(fileInputStream, fileDescriptor);
         getLogger().appendRecord(record);
         return record.recordId;
     }
@@ -196,83 +179,17 @@ public class AccessLogger {
         return record.recordId;
     }
 
-    /** compute the accessed resources & files and put them into the output file */
-    public static void provideOutput() {
-        fillAccessedLists();
-        long testTimestamp = System.currentTimeMillis();
-        getLogger().writeToOutputFile(getOutputFilePath(testTimestamp), testTimestamp);
-    }
-
-    /** compute the output file path from the file_access_agent.properties */
-    private static String getOutputFilePath(long testTimestamp) {
-
-        Date dateCorrespondingTestTimestamp = new Date(testTimestamp);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd_HH-mm-ss");
-
-        if (OutputFileVar.isDefined()) {
-            return OutputFileVar.getOutputPath() + "/" + OutputFileVar.getPrefix() + formatter.format(dateCorrespondingTestTimestamp) + ".json";
-        }
-
-        Properties agentProps = new Properties();
-        try {
-            agentProps.load(ClassLoader.getSystemResourceAsStream("file_access_agent.properties"));
-        } catch (IOException e) {
-            System.err.println("FileAccessAgent failed to get its properties!");
-            e.printStackTrace();
-            return null;
-        }
-
-        String outputFilePath = agentProps.getProperty("output_file_location");
-        String outputFilePrefix = agentProps.getProperty("output_file_prefix");
-        return outputFilePath + "/" + outputFilePrefix + testTimestamp + ".json";
-
-    }
-
-    /**  write this AccessLoggers contents to a file ath the given location */
-    private void writeToOutputFile(String outputPath, long testTimestamp) {
-        FileWriter fileWriter;
-        try {
-            fileWriter = new FileWriter(outputPath, false);
-        } catch (IOException e) {
-            System.err.println("Error while trying to open FileWriter for agent output file.");
-            e.printStackTrace();
-            return;
-        }
-
-        BufferedWriter writer = new BufferedWriter(fileWriter);
-        Set<File> filesToLogAccessed;
-        if (RealReadVar.isDefined() && RealReadVar.isInRealReadMode()) {
-            filesToLogAccessed = getReadFiles();
-        } else {
-            filesToLogAccessed = getAccessedFiles();
-        }
-
-        String content = JsonUtil.getOutputJsonString(filesToLogAccessed, getAccessedResources(), getRecordDebugInfos(), testTimestamp);
-        
-        try {
-            writer.write(content);
-        } catch (IOException e) {
-            System.err.println("Error while trying to write to agent output file.");
-            e.printStackTrace();
-        }
-
-        try {
-            writer.close();
-        } catch (IOException e) {
-            System.err.println("Error while trying to close BufferedWriter to agent output file.");
-            e.printStackTrace();
-        }
-    
-    }
-
     // compute the accessed files and resources from the records
-    private static void fillAccessedLists() {
+    public static void fillAccessedLists() {
 
-        Collection<RecordBase> records = getLogger().records.values();
-        for (RecordBase recordObj: records) {
+        Collection<RecordBase> tmp = new ArrayList<>(getLogger().records.values());
+
+        for (RecordBase recordObj: tmp) {
             // I don't really like this, this implementation with "side effects" due to missing return values...
             // but for now it is there to enforce the singleton principle
-            ((RecordBase)recordObj).updateLists(getLogger());
+            if (recordObj != null) {
+                ((RecordBase)recordObj).updateLists(getLogger());
+            }
         }
     }
 
@@ -281,7 +198,7 @@ public class AccessLogger {
     }
 
     /** the only method that should be used to get the AccessLogger to ensure a singleton */
-    private static AccessLogger getLogger() {
+    public static AccessLogger getLogger() {
         if (ACCESS_LOGGER == null) {
             ACCESS_LOGGER = new AccessLogger();
         }

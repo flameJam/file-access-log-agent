@@ -21,19 +21,9 @@ public class ConstructorTransformer implements AgentBuilder.Transformer {
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
             JavaModule module, ProtectionDomain protectionDomain) {
 
-        /* //might reintroduce the transformation of the File-Constructor later, when implementing read-logging
-        if("java.io.File".equals(typeDescription.getActualName())) {
-            return getBuilderForFile(builder);
-        }
-        */
-
         if ("java.io.FileInputStream".equals(typeDescription.getActualName())) {
             return getBuilderForFileInputStream(builder);
         }
-
-        /*if ("javax.imageio.stream.FileImageInputStream".equals(typeDescription.getActualName())) {
-            return getBuilderForFileImageInputStream(builder);
-        }*/
 
         return builder;
 

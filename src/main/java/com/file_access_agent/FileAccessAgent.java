@@ -20,7 +20,7 @@ import net.bytebuddy.description.type.TypeDescription;
 
 import com.file_access_agent.common.util.environment.DebugVar;
 import com.file_access_agent.common.util.environment.RealReadVar;
-import com.file_access_agent.logger.AccessLogger;
+import com.file_access_agent.output.OutputProvider;
 import com.file_access_agent.transformer.ConstructorTransformer;
 import com.file_access_agent.transformer.FilesTransformer;
 import com.file_access_agent.transformer.ImageIOTransformer;
@@ -31,10 +31,10 @@ import com.file_access_agent.transformer.ResourceTransformer;
 public class FileAccessAgent {
     
     // Classes which are instrumented for dealing with java Files and FileInputStreams
-    private final static String CLASSNAMES_TO_WATCH_FILE[] = {File.class.getName(), FileInputStream.class.getName()};
+    private final static String CLASSNAMES_TO_WATCH_FILE[] = {FileInputStream.class.getName()};
 
     // Classes whicha are instrumented for dealing with java Resources
-    private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
+    private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName(), ClassLoader.class.getName()};
 
     
 
@@ -64,17 +64,21 @@ public class FileAccessAgent {
             return;
         }
 
+        System.out.println("Installing Constructor Agent Builder (FileInputStream.class)");
         getConstructorAgentBuilder(inst, tempFolder).installOn(inst);
 
         if (RealReadVar.isDefined() && RealReadVar.isInRealReadMode()) {
+            System.out.println("Installing Read Agent Builder (all subtypes of InputStream)");
             getReadAgentBuilder(inst, tempFolder).installOn(inst);
         }
         
-
+        System.out.println("Installing Resource Agent Builder (Class.class, ClassLoader.class)");
         getResourceAgentBuilder(inst, tempFolder).installOn(inst);
 
+        System.out.println("Installing ImageInputStreamConstructor Agent Builder (ImageIO.class)");
         getImageInputStreamConstructorAgentBuilder(inst, tempFolder).installOn(inst);
 
+        System.out.println("Installing Files Agent Builder (Files.class)");
         getFilesAgentBuilder(inst, tempFolder).installOn(inst);
 
         addShutdownHookForOutputComputation();
@@ -85,7 +89,7 @@ public class FileAccessAgent {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                AccessLogger.provideOutput();
+                OutputProvider.provideOutput();
             }
         });
     }
@@ -144,6 +148,7 @@ public class FileAccessAgent {
             .with(AgentBuilder.InstallationListener.StreamWriting.toSystemError())
             .ignore(ElementMatchers.not(typeMatcher))
             .ignore(ElementMatchers.nameStartsWith("net.bytebuddy"))
+            .ignore(ElementMatchers.nameStartsWith("com.file_access_agent"))
             .type(typeMatcher);
         }
 

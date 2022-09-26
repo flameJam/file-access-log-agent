@@ -10,6 +10,7 @@ public abstract class InputStreamRecordBase extends RecordBase {
     }
 
     public InputStreamRecordBase(InputStream inputStream) {
+        super();
         this.inputStream = inputStream;
     }
 }

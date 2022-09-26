@@ -10,8 +10,8 @@ java_binary(
     deps = [
         "@maven//:net_bytebuddy_byte_buddy",
         "//src/main/java/com/file_access_agent/transformer:transformers",
-        "//src/main/java/com/file_access_agent/logger:loggerLib",
         "//src/main/java/com/file_access_agent/common/util/environment:util_environment_lib",
+        "//src/main/java/com/file_access_agent/output:output",
         "//:CopyLoggerBin",
         ],
     data = ["//src/main/java/com/file_access_agent/logger:loggerBin_deploy.jar"],

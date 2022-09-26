@@ -29,7 +29,7 @@ public class ImageInputStreamCreatedFileRecord extends RecordBase {
     public void updateLists(AccessLogger accessLogger) {
         Set<File> accessedFiles= accessLogger.getAccessedFiles();
         accessedFiles.add(this.file);
-        Map<Closeable, File> imageInputStreamMap = accessLogger.getInputStreamsToFilesMaps().get(ImageInputStream.class.getName());
+        Map<Closeable, File> imageInputStreamMap = accessLogger.getInputStreamsToFilesMaps().getOrDefault(ImageInputStream.class.getName(), new HashMap<>());
         imageInputStreamMap.put(this.imageInputStream, this.file);
         AccessLogger.updateLogger(null, accessedFiles, null, Map.of(ImageInputStream.class.getName(), imageInputStreamMap), null);
     }

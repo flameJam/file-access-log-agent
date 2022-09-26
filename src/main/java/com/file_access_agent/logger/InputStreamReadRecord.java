@@ -17,9 +17,9 @@ public class InputStreamReadRecord extends InputStreamRecordBase {
     @Override
     public void updateLists(AccessLogger accessLogger) {
         Set<File> readFiles = accessLogger.getReadFiles();
-        Set<File> accessedFiles = accessLogger.getAccessedFiles(); 
+        Set<File> accessedFiles = accessLogger.getAccessedFiles();
 
-        Map<Closeable, File> inputStreamToFileMap = accessLogger.getInputStreamsToFilesMaps().get(inputStream.getClass().getName());
+        Map<Closeable, File> inputStreamToFileMap = accessLogger.getInputStreamsToFilesMaps().getOrDefault(inputStream.getClass().getName(), new HashMap<>());
 
         File readFile = inputStreamToFileMap.getOrDefault(inputStream, null);
 
@@ -27,7 +27,6 @@ public class InputStreamReadRecord extends InputStreamRecordBase {
             readFiles.add(readFile);
             AccessLogger.updateLogger(null, accessedFiles, null, null, null, readFiles);
         }
-        
     }
 
     @Override
