@@ -9,6 +9,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.file_access_agent.common.util.environment.RepositoryVar;
 
@@ -23,8 +25,10 @@ public class LocationUtil {
 
         String errorMessageTemplate = "Jar URL %s could not be resolved to the Jar files URI - %s";
         if ("jar".equals(resourceURL.getProtocol())) {
+            String jarEntryName = null;
             try {
-                resourceURI = ((JarURLConnection) resourceURL.openConnection()).getJarFileURL().toURI();
+                JarURLConnection jarUrlConnection = (JarURLConnection) resourceURL.openConnection();
+                resourceURI = jarUrlConnection.getJarFileURL().toURI();
 
             } catch (MalformedURLException malformedURLException) {
                 locationComputationErrorMessage(String.format(errorMessageTemplate, resourceURL), malformedURLException);
