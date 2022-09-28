@@ -34,7 +34,7 @@ public class FileAccessAgent {
     private final static String CLASSNAMES_TO_WATCH_FILE[] = {File.class.getName(), FileInputStream.class.getName()};
 
     // Classes whicha are instrumented for dealing with java Resources
-    private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName()};
+    private final static String CLASSNAMES_TO_WATCH_RESOURCE[] = {Class.class.getName(), ClassLoader.class.getName()};
 
     
 
