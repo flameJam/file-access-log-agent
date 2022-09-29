@@ -17,9 +17,21 @@ import com.file_access_agent.advice.FileInputStreamConstructorLogAdvice;
 /** Transformer implementing the transformation of the FileInputStream-Constructors */
 public class ConstructorTransformer implements AgentBuilder.Transformer {
 
-    @Override
+//    @Override
     public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
             JavaModule module, ProtectionDomain protectionDomain) {
+
+        if ("java.io.FileInputStream".equals(typeDescription.getActualName())) {
+            return getBuilderForFileInputStream(builder);
+        }
+
+        return builder;
+
+    }
+
+    @Override
+    public Builder<?> transform(Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader,
+            JavaModule module) {
 
         if ("java.io.FileInputStream".equals(typeDescription.getActualName())) {
             return getBuilderForFileInputStream(builder);
