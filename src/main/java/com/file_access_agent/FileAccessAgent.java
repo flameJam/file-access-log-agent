@@ -131,6 +131,7 @@ public class FileAccessAgent {
             .with(AgentBuilder.InstallationListener.StreamWriting.toSystemError())
             .ignore(ElementMatchers.not(typeMatcher))
             .ignore(ElementMatchers.nameStartsWith("net.bytebuddy"))
+            .ignore(ElementMatchers.nameStartsWith("com.file_access_agent"))
             .type(typeMatcher);
         }
 
@@ -140,6 +141,7 @@ public class FileAccessAgent {
         .with(new AgentBuilder.InjectionStrategy.UsingInstrumentation(inst, tempFolder))
         .ignore(ElementMatchers.not(typeMatcher))
         .ignore(ElementMatchers.nameStartsWith("net.bytebuddy"))
+        .ignore(ElementMatchers.nameStartsWith("com.file_access_agent"))
         .type(typeMatcher);
     }
 
