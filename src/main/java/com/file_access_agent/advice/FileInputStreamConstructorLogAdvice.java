@@ -18,7 +18,8 @@ public class FileInputStreamConstructorLogAdvice {
          
          if (firstArgumentObject instanceof File) {
             int recordId = AccessLogger.logFileInputStreamCreated(fileInputStream, (File) firstArgumentObject);
-            if (DebugVar.isDebugModeTrue()) {
+
+            if (DebugVar.isDebugModeTrue()) { // || ((File)(firstArgumentObject)).getName().contains("OwnerEditor.fxml") // condition for debug output for specific files
                 AccessLogger.logStackTrace(recordId, Thread.currentThread().getStackTrace());
             }
         } else if (firstArgumentObject instanceof FileDescriptor) {
