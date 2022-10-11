@@ -72,7 +72,7 @@ public class JsonUtil {
 
 
 
-        if ("true".equals(System.getenv("FILE_ACCESS_AGENT_DEBUG"))) {
+        if ("true".equals(System.getenv("FILE_ACCESS_AGENT_DEBUG")) || "specifics".equals(System.getenv("FILE_ACCESS_AGENT_DEBUG"))) {
             accessLoggerObject.add("record_debug_info", gson.toJsonTree(recordDebugInfosJsonCopy));
         }
         
