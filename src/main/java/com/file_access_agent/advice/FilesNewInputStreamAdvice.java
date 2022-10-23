@@ -13,7 +13,7 @@ public class FilesNewInputStreamAdvice {
     @Advice.OnMethodExit
     public static void logFilesNewInputStream(@Advice.Return InputStream inputStream,
     @Advice.Argument(0) Path firstArgumentPath) {
-        System.out.println("found Files.newInputStream(...)");
+        //System.out.println("found Files.newInputStream(...)");
         int recordId = AccessLogger.logInputStreamCreatedWithPath(inputStream, firstArgumentPath);
         if (DebugVar.isDebugModeTrue()) {
             AccessLogger.logStackTrace(recordId, Thread.currentThread().getStackTrace());

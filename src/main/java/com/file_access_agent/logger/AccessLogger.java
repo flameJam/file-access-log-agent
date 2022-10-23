@@ -161,7 +161,13 @@ public class AccessLogger {
     }
 
     public static int logInputStreamCreatedWithPath(InputStream inputStream, Path path) {
-        InputStreamCreatedRecord record = new InputStreamCreatedRecord(inputStream, path.toFile());
+        File file;
+        try {
+            file = path.toFile();
+        } catch(UnsupportedOperationException e) {
+            return -1;
+        }
+        InputStreamCreatedRecord record = new InputStreamCreatedRecord(inputStream, file);
         getLogger().appendRecord(record);
         return record.recordId;
     }
