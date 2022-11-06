@@ -182,19 +182,23 @@ public class AccessLogger {
     // compute the accessed files and resources from the records
     public static void fillAccessedLists() {
 
-        Collection<RecordBase> tmp = new ArrayList<>(getLogger().records.values());
+        synchronized(getLogger()) { 
+            Collection<RecordBase> tmp = new ArrayList<>(getLogger().records.values());
 
-        for (RecordBase recordObj: tmp) {
-            // I don't really like this, this implementation with "side effects" due to missing return values...
-            // but for now it is there to enforce the singleton principle
-            if (recordObj != null) {
-                ((RecordBase)recordObj).updateLists(getLogger());
+            for (RecordBase recordObj: tmp) {
+                // I don't really like this, this implementation with "side effects" due to missing return values...
+                // but for now it is there to enforce the singleton principle
+                if (recordObj != null) {
+                    ((RecordBase)recordObj).updateLists(getLogger());
+                }
             }
         }
     }
 
     public void appendRecord(RecordBase record) {
-        this.records.put(record.recordId, record);
+        synchronized(this) {
+            this.records.put(record.recordId, record);
+        }
     }
 
     /** the only method that should be used to get the AccessLogger to ensure a singleton */
