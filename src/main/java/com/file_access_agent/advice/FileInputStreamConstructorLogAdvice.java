@@ -19,13 +19,11 @@ public class FileInputStreamConstructorLogAdvice {
          if (firstArgumentObject instanceof File) {
             int recordId = AccessLogger.logFileInputStreamCreated(fileInputStream, (File) firstArgumentObject);
 
-            if (DebugVar.isDebugModeTrue()) { // || ((File)(firstArgumentObject)).getName().contains("OwnerEditor.fxml") // condition for debug output for specific files
+            if (DebugVar.isDebugModeTrue()) {
                 AccessLogger.logStackTrace(recordId, Thread.currentThread().getStackTrace());
             }
         } else if (firstArgumentObject instanceof FileDescriptor) {
             // currently not used
-            // I'm unsure whether we need this constructor since the FileDescriptor for Files can only come from InputStreams,
-            // so at some point there has to be a FileInputStream (I guess?)
             String msg = String.format("FileInputStream (%s) has just been created for FileDescriptor: %s\n", 
             fileInputStream.toString(),
             ((FileDescriptor) firstArgumentObject).toString());

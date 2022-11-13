@@ -14,7 +14,7 @@ public class FilesNewInputStreamAdvice {
     public static void logFilesNewInputStream(@Advice.Return InputStream inputStream,
     @Advice.Argument(0) Path firstArgumentPath) {
         int recordId = AccessLogger.logInputStreamCreatedWithPath(inputStream, firstArgumentPath);
-        if (DebugVar.isDebugModeTrue()) { // || firstArgumentPath.toString().contains("OwnerEditor.fxml") // condition for debug output for specific files
+        if (DebugVar.isDebugModeTrue()) {
             AccessLogger.logStackTrace(recordId, Thread.currentThread().getStackTrace());
         }
     }
