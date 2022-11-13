@@ -1,7 +1,7 @@
-# File-Access-Log Java Agent (WIP)
+# File-Access-Log Java Agent
 
 ...is a Java agent for logging accessed files and resources of a SUT during test runtime.
-This is part of my masters thesis with the goal to include non-code artifacts, such as config-files, resources, ... into the Test Gap Analysis in Teamscale.
+This is part of my master's thesis with the goal to include non-code artifacts, such as config-files, resources, ... into the Test Gap Analysis in Teamscale.
 
 ## Installation
 
@@ -18,7 +18,14 @@ The resulting jars will be
 - `bazel-bin/FileAccessAgent_deploy.jar`
 
 ### Building for different branches
-If you intend to use different versions of the agent, for example the version on branch `main` and the version (currently in development) on branch `real_read_dev`, using the build-script `buildAgentForBranch.sh` might be nice. It does the usual building process, but then puts the output into a separate directory called `binaries/<your_currrent_git_branch_name>`.
+
+**different branches hold different versions**
+- main --> the usual agent
+- using_bytebuddy_1-12-12 --> the usual agent with an older bytebuddy version, some libraries require this one instead of the newest one (try to use this if you get an error saying that an interface function of bytebuddy wasn't implemented correctly)
+- real_read_dev -> the usaul agent, but has the additional possibility to activate "real read" == "files are not read when their InputStream was created, but only when it was read, too" (in my master thesis: the "Read Variant")
+- real_read_using_bytebuddy_1-12-12 --> the Read Variant with an older bytebuddy
+
+If you intend to use different versions of the agent, for example the version on branch `main` and the version on branch `real_read_dev`, using the build-script `buildAgentForBranch.sh` might be nice. It does the usual building process, but then puts the output into a separate directory called `binaries/<your_currrent_git_branch_name>`.
 Added this to prevent me from trying to execute large sets of tests with the agent while accidentally using a broken agent, because I previously spent time on a development branch and built a different agent-jar for debugging purposes...
 
 ### Requirements
