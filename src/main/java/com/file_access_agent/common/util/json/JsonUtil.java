@@ -16,7 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /** Class providing Util regarding json. Especially important: the method for generating an output json String for the AccessLogger */
 public class JsonUtil {
@@ -72,7 +71,7 @@ public class JsonUtil {
 
 
 
-        if ("true".equals(System.getenv("FILE_ACCESS_AGENT_DEBUG")) || "specifics".equals(System.getenv("FILE_ACCESS_AGENT_DEBUG"))) {
+        if ("true".equals(System.getenv("FILE_ACCESS_AGENT_DEBUG"))) {
             accessLoggerObject.add("record_debug_info", gson.toJsonTree(recordDebugInfosJsonCopy));
         }
         

@@ -13,12 +13,8 @@ public class FilesNewInputStreamAdvice {
     @Advice.OnMethodExit
     public static void logFilesNewInputStream(@Advice.Return InputStream inputStream,
     @Advice.Argument(0) Path firstArgumentPath) {
-<<<<<<< HEAD
-        //System.out.println("found Files.newInputStream(...)");
-=======
->>>>>>> e26e437... Added debug argument special case for debug info for specific files (have to be hardcoded into the advices)
         int recordId = AccessLogger.logInputStreamCreatedWithPath(inputStream, firstArgumentPath);
-        if (DebugVar.isDebugModeTrue()) { // || firstArgumentPath.toString().contains("OwnerEditor.fxml") // condition for debug output for specific files
+        if (DebugVar.isDebugModeTrue()) {
             AccessLogger.logStackTrace(recordId, Thread.currentThread().getStackTrace());
         }
     }
